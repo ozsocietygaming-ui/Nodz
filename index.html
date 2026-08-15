@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>Nodz — Local Needs, Real-Time Connections</title>
+<meta name="description" content="Nodz — طلبات وخدمات مباشرة عبر الجزائر">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='30' cy='30' r='12' fill='%231F8A5F'/%3E%3Ccircle cx='75' cy='40' r='9' fill='%232D7D9A'/%3E%3Ccircle cx='45' cy='75' r='10' fill='%23E8935A'/%3E%3Cline x1='30' y1='30' x2='75' y2='40' stroke='%231F8A5F' stroke-width='4'/%3E%3Cline x1='30' y1='30' x2='45' y2='75' stroke='%231F8A5F' stroke-width='4'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        cream: '#FBF8F3',
+        clay: '#EFE7DA',
+        clay2: '#E4DACB',
+        moss: { 50:'#EEF7F1', 100:'#D8EEE0', 200:'#B4DFC3', 300:'#84CAA1', 400:'#3FAE73', 500:'#1F8A5F', 600:'#166B49', 700:'#0F4E36', 800:'#0B3A29' },
+        spore: { 50:'#EAF5F8', 100:'#CDE9EF', 300:'#7FC0D2', 400:'#3FA0B5', 500:'#2D7D9A', 600:'#20627A' },
+        urgent: { 50:'#FDF1E7', 100:'#FBE1C7', 300:'#F0B27E', 400:'#EA9E5E', 500:'#E8935A', 600:'#C86F35' },
+        ink: '#2B2B28',
+        inks: '#6B6558',
+        inkfaint: '#9A9284'
+      },
+      fontFamily: {
+        display: ['"Plus Jakarta Sans"','sans-serif'],
+        body: ['Inter','sans-serif'],
+        arabic: ['Tajawal','sans-serif']
+      },
+      boxShadow: {
+        soft: '0 2px 10px -2px rgba(43,43,40,0.07), 0 8px 24px -8px rgba(43,43,40,0.08)',
+        softer: '0 1px 3px rgba(43,43,40,0.06)'
+      },
+      keyframes: {
+        toastin: { '0%': { transform: 'translateY(-12px)', opacity: 0 }, '100%': { transform: 'translateY(0)', opacity: 1 } },
+        popin: { '0%': { transform: 'scale(.96)', opacity: 0 }, '100%': { transform: 'scale(1)', opacity: 1 } },
+        pulseGlow: { '0%,100%': { opacity: .55 }, '50%': { opacity: 1 } }
+      },
+      animation: {
+        toastin: 'toastin .35s cubic-bezier(.2,.8,.2,1)',
+        popin: 'popin .22s cubic-bezier(.2,.8,.2,1)',
+        pulseGlow: 'pulseGlow 2.4s ease-in-out infinite'
+      }
+    }
+  }
+}
+</script>
+<style>
+  html, body { background: #FBF8F3; }
+  body.lang-ar, body.lang-ar * { font-family: 'Tajawal', sans-serif; }
+  body.lang-fr, body.lang-en { font-family: 'Inter', sans-serif; }
+  body.lang-fr .font-display, body.lang-en .font-display { font-family: 'Plus Jakarta Sans', sans-serif; }
+  [dir="rtl"] .flip-x { transform: scaleX(-1); }
+  ::-webkit-scrollbar { height: 8px; width: 8px; }
+  ::-webkit-scrollbar-thumb { background: #E4DACB; border-radius: 8px; }
+  .card-organic { border-radius: 22px 22px 22px 6px; }
+  [dir="rtl"] .card-organic { border-radius: 22px 22px 6px 22px; }
+  .chip { transition: all .15s ease; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  input:focus, select:focus, textarea:focus, button:focus-visible { outline: 2px solid #1F8A5F; outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+  }
+  .skeleton { background: linear-gradient(90deg,#EFE7DA 25%,#F5EEE2 37%,#EFE7DA 63%); background-size: 400% 100%; animation: sk 1.4s ease infinite; }
+  @keyframes sk { 0%{background-position:100% 50%} 100%{background-position:0 50%} }
+</style>
+</head>
+<body class="lang-ar bg-cream text-ink font-arabic min-h-screen flex flex-col">
+
+<header class="sticky top-0 z-40 bg-cream/90 backdrop-blur border-b border-clay2">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6">
+    <div class="flex items-center justify-between h-16 gap-3">
+      <div class="flex items-center gap-2 shrink-0">
+        <canvas id="logoCanvas" width="36" height="36" class="rounded-full" aria-hidden="true"></canvas>
+        <span class="font-display font-extrabold text-xl tracking-tight text-moss-700">Nodz</span>
+      </div>
+      <div class="hidden md:block flex-1 text-center">
+        <p id="taglineText" class="text-sm text-inks font-medium"></p>
+      </div>
+      <div class="flex items-center gap-2">
+        <div class="flex items-center bg-clay rounded-full p-1 text-xs font-semibold">
+          <button data-lang="ar" class="lang-btn px-2.5 py-1.5 rounded-full transition-all">العربية</button>
+          <button data-lang="fr" class="lang-btn px-2.5 py-1.5 rounded-full transition-all">Français</button>
+          <button data-lang="en" class="lang-btn px-2.5 py-1.5 rounded-full transition-all">English</button>
+        </div>
+        <button id="openPostModalBtn" class="bg-moss-500 hover:bg-moss-600 text-white text-sm font-bold px-4 py-2.5 rounded-full shadow-soft transition-all active:scale-95 flex items-center gap-1.5">
+          <i data-lucide="plus" class="w-4 h-4"></i>
+          <span id="navPostBtnText"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="relative overflow-hidden border-b border-clay2">
+  <canvas id="heroCanvas" class="absolute inset-0 w-full h-full opacity-70" aria-hidden="true"></canvas>
+  <div class="relative max-w-6xl mx-auto px-4 sm:px-6 pt-8 pb-6 sm:pt-12 sm:pb-8">
+    <h1 id="heroTagline" class="font-display font-extrabold text-2xl sm:text-4xl text-ink max-w-2xl leading-tight"></h1>
+    <p id="heroSub" class="mt-2 text-inks text-sm sm:text-base max-w-xl"></p>
+
+    <div class="mt-6 inline-flex bg-white rounded-2xl shadow-softer p-1.5 border border-clay2">
+      <button data-mode="request" class="mode-btn flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm transition-all">
+        <span class="w-2 h-2 rounded-full bg-urgent-500 animate-pulseGlow"></span>
+        <span id="modeRequestText"></span>
+      </button>
+      <button data-mode="service" class="mode-btn flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm transition-all">
+        <span class="w-2 h-2 rounded-full bg-moss-500"></span>
+        <span id="modeServiceText"></span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<section class="max-w-6xl mx-auto w-full px-4 sm:px-6 mt-5">
+  <div class="flex flex-col sm:flex-row gap-3">
+    <div class="relative flex-1">
+      <i data-lucide="search" class="w-4 h-4 absolute top-1/2 -translate-y-1/2 start-3.5 text-inkfaint"></i>
+      <input id="searchInput" type="text" class="w-full bg-white border border-clay2 rounded-xl py-2.5 ps-10 pe-3 text-sm placeholder:text-inkfaint focus:border-moss-400" />
+    </div>
+    <select id="wilayaFilter" class="bg-white border border-clay2 rounded-xl py-2.5 px-3 text-sm font-medium min-w-[9rem]"></select>
+  </div>
+  <div id="categoryChips" class="mt-3 flex gap-2 overflow-x-auto no-scrollbar pb-1"></div>
+</section>
+
+<main class="max-w-6xl mx-auto w-full px-4 sm:px-6 mt-5 mb-16 flex-1">
+  <div id="feedGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+  <div id="emptyState" class="hidden flex-col items-center justify-center text-center py-20">
+    <div class="w-20 h-20 rounded-full bg-clay flex items-center justify-center mb-4">
+      <i data-lucide="radio" class="w-9 h-9 text-inkfaint"></i>
+    </div>
+    <h3 id="emptyTitle" class="font-display font-bold text-lg text-ink"></h3>
+    <p id="emptyDesc" class="text-inks text-sm mt-1 max-w-xs"></p>
+  </div>
+</main>
+
+<footer class="border-t border-clay2 py-6 text-center">
+  <p id="footerText" class="text-xs text-inkfaint"></p>
+</footer>
+
+<div id="modalOverlay" class="hidden fixed inset-0 bg-ink/40 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+  <div id="modalPanel" class="bg-cream w-full sm:max-w-lg sm:rounded-3xl rounded-t-3xl max-h-[92vh] overflow-y-auto animate-popin shadow-soft">
+    <div class="sticky top-0 bg-cream/95 backdrop-blur flex items-center justify-between px-5 py-4 border-b border-clay2">
+      <h2 id="modalTitle" class="font-display font-bold text-lg"></h2>
+      <button id="closeModalBtn" class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-clay transition-colors" aria-label="Close">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
+    <form id="postForm" class="px-5 py-5 space-y-4">
+      <div>
+        <label id="lblMode" class="block text-xs font-bold text-inks mb-1.5"></label>
+        <div class="flex gap-2">
+          <button type="button" data-formmode="request" class="formmode-btn flex-1 py-2.5 rounded-xl border-2 text-sm font-bold transition-all"></button>
+          <button type="button" data-formmode="service" class="formmode-btn flex-1 py-2.5 rounded-xl border-2 text-sm font-bold transition-all"></button>
+        </div>
+      </div>
+      <div>
+        <label id="lblCategory" class="block text-xs font-bold text-inks mb-1.5"></label>
+        <select id="categorySelect" required class="w-full bg-white border border-clay2 rounded-xl py-2.5 px-3 text-sm"></select>
+      </div>
+      <div>
+        <label id="lblTitleField" class="block text-xs font-bold text-inks mb-1.5"></label>
+        <input id="titleInput" type="text" required maxlength="70" class="w-full bg-white border border-clay2 rounded-xl py-2.5 px-3 text-sm" />
+      </div>
+      <div>
+        <label id="lblDetails" class="block text-xs font-bold text-inks mb-1.5"></label>
+        <textarea id="detailsInput" rows="3" maxlength="240" class="w-full bg-white border border-clay2 rounded-xl py-2.5 px-3 text-sm resize-none"></textarea>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label id="lblWilaya" class="block text-xs font-bold text-inks mb-1.5"></label>
+          <select id="wilayaSelect" required class="w-full bg-white border border-clay2 rounded-xl py-2.5 px-3 text-sm"></select>
+        </div>
+        <div>
+          <label id="lblCommune" class="block text-xs font-bold text-inks mb-1.5"></label>
+          <input id="communeInput" type="text" required class="w-full bg-white border border-clay2 rounded-xl py-2.5 px-3 text-sm" />
+        </div>
+      </div>
+      <div>
+        <label id="lblPhone" class="block text-xs font-bold text-inks mb-1.5"></label>
+        <div class="relative">
+          <i data-lucide="phone" class="w-4 h-4 absolute top-1/2 -translate-y-1/2 start-3.5 text-inkfaint"></i>
+          <input id="phoneInput" type="tel" required inputmode="numeric" class="w-full bg-white border border-clay2 rounded-xl py-2.5 ps-10 pe-3 text-sm" placeholder="05xx xx xx xx" />
+        </div>
+        <p id="phoneError" class="hidden text-xs text-urgent-600 font-semibold mt-1"></p>
+      </div>
+      <div>
+        <label id="lblExpiration" class="block text-xs font-bold text-inks mb-1.5"></label>
+        <div id="expChips" class="grid grid-cols-4 gap-2"></div>
+      </div>
+      <button type="submit" id="submitBtn" class="w-full bg-moss-500 hover:bg-moss-600 text-white font-bold py-3 rounded-xl shadow-soft transition-all active:scale-[.98] flex items-center justify-center gap-2">
+        <i data-lucide="send" class="w-4 h-4"></i>
+        <span id="submitBtnText"></span>
+      </button>
+    </form>
+  </div>
+</div>
+
+<div id="toastContainer" class="fixed top-4 inset-x-0 z-[60] flex flex-col items-center gap-2 px-4 pointer-events-none"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, push, onValue, onChildAdded, update, remove, off, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAKnmSoB5-cdVtf74NsZYVgu-yext9SVi4",
+  authDomain: "nodz-435fd.firebaseapp.com",
+  projectId: "nodz-435fd",
+  storageBucket: "nodz-435fd.firebasestorage.app",
+  messagingSenderId: "439364237363",
+  appId: "1:439364237363:web:edd1dde3ad7a14baa88b46",
+  measurementId: "G-KVHWK167GL",
+  databaseURL: "https://nodz-435fd-default-rtdb.europe-west1.firebasedatabase.app/"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+const WILAYAS = [
+  {c:1,ar:"أدرار",fr:"Adrar"},{c:2,ar:"الشلف",fr:"Chlef"},{c:3,ar:"الأغواط",fr:"Laghouat"},
+  {c:4,ar:"أم البواقي",fr:"Oum El Bouaghi"},{c:5,ar:"باتنة",fr:"Batna"},{c:6,ar:"بجاية",fr:"Béjaïa"},
+  {c:7,ar:"بسكرة",fr:"Biskra"},{c:8,ar:"بشار",fr:"Béchar"},{c:9,ar:"البليدة",fr:"Blida"},
+  {c:10,ar:"البويرة",fr:"Bouira"},{c:11,ar:"تمنراست",fr:"Tamanrasset"},{c:12,ar:"تبسة",fr:"Tébessa"},
+  {c:13,ar:"تلمسان",fr:"Tlemcen"},{c:14,ar:"تيارت",fr:"Tiaret"},{c:15,ar:"تيزي وزو",fr:"Tizi Ouzou"},
+  {c:16,ar:"الجزائر",fr:"Alger"},{c:17,ar:"الجلفة",fr:"Djelfa"},{c:18,ar:"جيجل",fr:"Jijel"},
+  {c:19,ar:"سطيف",fr:"Sétif"},{c:20,ar:"سعيدة",fr:"Saïda"},{c:21,ar:"سكيكدة",fr:"Skikda"},
+  {c:22,ar:"سيدي بلعباس",fr:"Sidi Bel Abbès"},{c:23,ar:"عنابة",fr:"Annaba"},{c:24,ar:"قالمة",fr:"Guelma"},
+  {c:25,ar:"قسنطينة",fr:"Constantine"},{c:26,ar:"المدية",fr:"Médéa"},{c:27,ar:"مستغانم",fr:"Mostaganem"},
+  {c:28,ar:"المسيلة",fr:"M'Sila"},{c:29,ar:"معسكر",fr:"Mascara"},{c:30,ar:"ورقلة",fr:"Ouargla"},
+  {c:31,ar:"وهران",fr:"Oran"},{c:32,ar:"البيض",fr:"El Bayadh"},{c:33,ar:"إليزي",fr:"Illizi"},
+  {c:34,ar:"برج بوعريريج",fr:"Bordj Bou Arréridj"},{c:35,ar:"بومرداس",fr:"Boumerdès"},{c:36,ar:"الطارف",fr:"El Tarf"},
+  {c:37,ar:"تندوف",fr:"Tindouf"},{c:38,ar:"تيسمسيلت",fr:"Tissemsilt"},{c:39,ar:"الوادي",fr:"El Oued"},
+  {c:40,ar:"خنشلة",fr:"Khenchela"},{c:41,ar:"سوق أهراس",fr:"Souk Ahras"},{c:42,ar:"تيبازة",fr:"Tipaza"},
+  {c:43,ar:"ميلة",fr:"Mila"},{c:44,ar:"عين الدفلى",fr:"Aïn Defla"},{c:45,ar:"النعامة",fr:"Naâma"},
+  {c:46,ar:"عين تموشنت",fr:"Aïn Témouchent"},{c:47,ar:"غرداية",fr:"Ghardaïa"},{c:48,ar:"غليزان",fr:"Relizane"},
+  {c:49,ar:"تيميمون",fr:"Timimoun"},{c:50,ar:"برج باجي مختار",fr:"Bordj Badji Mokhtar"},{c:51,ar:"أولاد جلال",fr:"Ouled Djellal"},
+  {c:52,ar:"بني عباس",fr:"Béni Abbès"},{c:53,ar:"عين صالح",fr:"In Salah"},{c:54,ar:"عين قزام",fr:"In Guezzam"},
+  {c:55,ar:"تقرت",fr:"Touggourt"},{c:56,ar:"جانت",fr:"Djanet"},{c:57,ar:"المغير",fr:"El M'Ghair"},
+  {c:58,ar:"المنيعة",fr:"El Meniaa"}
+];
+
+const CATEGORIES = [
+  {k:"ride", icon:"car"},
+  {k:"medicine", icon:"pill"},
+  {k:"food", icon:"utensils"},
+  {k:"repair", icon:"wrench"},
+  {k:"freight", icon:"package"},
+  {k:"other", icon:"megaphone"}
+];
+
+const I18N = {
+  ar: {
+    tagline: "احتياجات محلية، تواصل مباشر عبر الجزائر",
+    heroTagline: "اطلب. تواصل. اتّصل. في ثوانٍ.",
+    heroSub: "لوحة مباشرة للطلبات والخدمات في حيّك — بدون تسجيل، بدون انتظار.",
+    navPost: "أضف طلب",
+    modeRequest: "طلبات مباشرة",
+    modeService: "خدمات متوفرة",
+    searchPlaceholder: "ابحث عن طلب أو خدمة...",
+    allWilayas: "كل الولايات",
+    allCategories: "الكل",
+    cat_ride: "نقل ومشاركة سيارة", cat_medicine: "دواء وصحة", cat_food: "طعام وتوصيل",
+    cat_repair: "إصلاح منزلي", cat_freight: "شحن وطرود", cat_other: "طلب عام",
+    emptyTitle: "لا توجد منشورات بعد",
+    emptyDesc: "كن أول من ينشر طلبًا أو خدمة في هذه المنطقة.",
+    footer: "Nodz — شبكة محلية بلا وسيط. اتصالك بجارك، مباشرة.",
+    callNow: "اتصال", whatsapp: "واتساب",
+    expiresIn: "ينتهي خلال", expired: "منتهي", fulfilled: "تم الإنجاز",
+    markFulfilled: "وضع كمنجَز", deleteBtn: "حذف",
+    justNow: "الآن", minAgo: "د مضت", hAgo: "س مضت", dAgo: "ي مضت",
+    modalTitleRequest: "نشر طلب", modalTitleService: "عرض خدمة",
+    lblMode: "النوع", modeRequestFull: "أحتاج مساعدة", modeServiceFull: "أقدّم خدمة",
+    lblCategory: "التصنيف", categoryPlaceholder: "اختر تصنيفًا",
+    lblTitleField: "العنوان", titlePlaceholder: "مثال: أبحث عن صيدلية مناوبة",
+    lblDetails: "تفاصيل إضافية (اختياري)", detailsPlaceholder: "أضف تفاصيل تساعد الآخرين...",
+    lblWilaya: "الولاية", lblCommune: "البلدية", communePlaceholder: "مثال: رأس الوادي",
+    lblPhone: "رقم الهاتف", phoneError: "أدخل رقم جزائري صحيح (05/06/07 + 8 أرقام)",
+    lblExpiration: "مدة الصلاحية",
+    exp1h: "ساعة", exp3h: "3 ساعات", expToday: "اليوم", exp24h: "24 ساعة",
+    submitBtn: "نشر الآن", cancel: "إلغاء",
+    toastPostCreated: "تم النشر بنجاح", toastPostDeleted: "تم الحذف", toastPostFulfilled: "تم وضع العلامة كمنجَز",
+    toastNewPost: "منشور جديد قريب منك", toastFillFields: "يرجى ملء جميع الحقول المطلوبة",
+    waGreetingRequest: "مرحبًا، شاهدت طلبك على Nodz بخصوص",
+    waGreetingService: "مرحبًا، شاهدت خدمتك على Nodz بخصوص"
+  },
+  fr: {
+    tagline: "Besoins locaux, connexions en temps réel à travers l'Algérie",
+    heroTagline: "Demandez. Connectez. Appelez. En quelques secondes.",
+    heroSub: "Le tableau en direct des demandes et services de votre quartier — sans compte, sans attente.",
+    navPost: "Publier",
+    modeRequest: "Demandes en direct",
+    modeService: "Services disponibles",
+    searchPlaceholder: "Rechercher une demande ou un service...",
+    allWilayas: "Toutes les wilayas",
+    allCategories: "Tout",
+    cat_ride: "Trajets & taxis", cat_medicine: "Médicaments & santé", cat_food: "Nourriture & livraison",
+    cat_repair: "Réparation à domicile", cat_freight: "Fret & colis", cat_other: "Besoin général",
+    emptyTitle: "Aucune publication pour le moment",
+    emptyDesc: "Soyez le premier à publier une demande ou un service dans cette zone.",
+    footer: "Nodz — un réseau local sans intermédiaire. Votre voisin, en direct.",
+    callNow: "Appeler", whatsapp: "WhatsApp",
+    expiresIn: "Expire dans", expired: "Expiré", fulfilled: "Résolu",
+    markFulfilled: "Marquer résolu", deleteBtn: "Supprimer",
+    justNow: "À l'instant", minAgo: "min", hAgo: "h", dAgo: "j",
+    modalTitleRequest: "Publier une demande", modalTitleService: "Proposer un service",
+    lblMode: "Type", modeRequestFull: "J'ai besoin d'aide", modeServiceFull: "Je propose un service",
+    lblCategory: "Catégorie", categoryPlaceholder: "Choisir une catégorie",
+    lblTitleField: "Titre", titlePlaceholder: "Ex : je cherche une pharmacie de garde",
+    lblDetails: "Détails supplémentaires (facultatif)", detailsPlaceholder: "Ajoutez des détails utiles...",
+    lblWilaya: "Wilaya", lblCommune: "Commune", communePlaceholder: "Ex : Ras El Oued",
+    lblPhone: "Numéro de téléphone", phoneError: "Entrez un numéro algérien valide (05/06/07 + 8 chiffres)",
+    lblExpiration: "Durée de validité",
+    exp1h: "1 heure", exp3h: "3 heures", expToday: "Aujourd'hui", exp24h: "24 heures",
+    submitBtn: "Publier", cancel: "Annuler",
+    toastPostCreated: "Publié avec succès", toastPostDeleted: "Supprimé", toastPostFulfilled: "Marqué comme résolu",
+    toastNewPost: "Nouvelle publication près de vous", toastFillFields: "Veuillez remplir tous les champs requis",
+    waGreetingRequest: "Bonjour, j'ai vu votre demande sur Nodz concernant",
+    waGreetingService: "Bonjour, j'ai vu votre service sur Nodz concernant"
+  },
+  en: {
+    tagline: "Local Needs, Real-Time Connections across Algeria",
+    heroTagline: "Ask. Connect. Call. In seconds.",
+    heroSub: "The live board for requests and services in your area — no account, no waiting.",
+    navPost: "Post",
+    modeRequest: "Live Requests",
+    modeService: "Available Services",
+    searchPlaceholder: "Search a request or service...",
+    allWilayas: "All wilayas",
+    allCategories: "All",
+    cat_ride: "Rides & taxis", cat_medicine: "Medicine & health", cat_food: "Food & delivery",
+    cat_repair: "Home repairs", cat_freight: "Freight & packages", cat_other: "General need",
+    emptyTitle: "No posts yet",
+    emptyDesc: "Be the first to post a request or service in this area.",
+    footer: "Nodz — a local network with no middleman. Your neighbor, live.",
+    callNow: "Call now", whatsapp: "WhatsApp",
+    expiresIn: "Expires in", expired: "Expired", fulfilled: "Fulfilled",
+    markFulfilled: "Mark fulfilled", deleteBtn: "Delete",
+    justNow: "Just now", minAgo: "m ago", hAgo: "h ago", dAgo: "d ago",
+    modalTitleRequest: "Post a request", modalTitleService: "Offer a service",
+    lblMode: "Type", modeRequestFull: "I need help", modeServiceFull: "I offer a service",
+    lblCategory: "Category", categoryPlaceholder: "Choose a category",
+    lblTitleField: "Title", titlePlaceholder: "e.g. Looking for an open pharmacy",
+    lblDetails: "Additional details (optional)", detailsPlaceholder: "Add details that help others...",
+    lblWilaya: "Wilaya", lblCommune: "Commune", communePlaceholder: "e.g. Ras El Oued",
+    lblPhone: "Phone number", phoneError: "Enter a valid Algerian number (05/06/07 + 8 digits)",
+    lblExpiration: "Expiration",
+    exp1h: "1 hour", exp3h: "3 hours", expToday: "Today", exp24h: "24 hours",
+    submitBtn: "Post now", cancel: "Cancel",
+    toastPostCreated: "Posted successfully", toastPostDeleted: "Deleted", toastPostFulfilled: "Marked as fulfilled",
+    toastNewPost: "New post near you", toastFillFields: "Please fill all required fields",
+    waGreetingRequest: "Hi, I saw your request on Nodz about",
+    waGreetingService: "Hi, I saw your service on Nodz about"
+  }
+};
+
+const state = {
+  lang: (navigator.language || "ar").startsWith("fr") ? "fr" : (navigator.language || "ar").startsWith("en") ? "en" : "ar",
+  mode: "request",
+  wilayaFilter: "all",
+  categoryFilter: "all",
+  search: "",
+  posts: {},
+  formMode: "request",
+  expChoice: "3h",
+  activeWilayaRef: null,
+  firstLoadDone: false
+};
+
+function t(key) { return I18N[state.lang][key] || key; }
+
+function myPostIds() {
+  try { return JSON.parse(localStorage.getItem("nodz_my_posts") || "[]"); } catch(e) { return []; }
+}
+function addMyPost(id, wilayaCode) {
+  const list = myPostIds();
+  list.push({ id, wilayaCode });
+  localStorage.setItem("nodz_my_posts", JSON.stringify(list));
+}
+function removeMyPost(id) {
+  const list = myPostIds().filter(p => p.id !== id);
+  localStorage.setItem("nodz_my_posts", JSON.stringify(list));
+}
+function isMyPost(id) {
+  return myPostIds().some(p => p.id === id);
+}
+
+function wilayaName(code) {
+  const w = WILAYAS.find(w => w.c === Number(code));
+  if (!w) return "";
+  return state.lang === "ar" ? w.ar : w.fr;
+}
+
+function normalizePhone(raw) {
+  return raw.replace(/[\s\-\.]/g, "");
+}
+function isValidAlgerianPhone(raw) {
+  const clean = normalizePhone(raw);
+  return /^0[567]\d{8}$/.test(clean);
+}
+function toWhatsAppLink(rawPhone, greetingText) {
+  const clean = normalizePhone(rawPhone);
+  const intl = "213" + clean.slice(1);
+  return `https://wa.me/${intl}?text=${encodeURIComponent(greetingText)}`;
+}
+
+function timeAgo(ts) {
+  const diffMs = Date.now() - ts;
+  const min = Math.floor(diffMs / 60000);
+  if (min < 1) return t("justNow");
+  if (min < 60) return `${min} ${t("minAgo")}`;
+  const hrs = Math.floor(min / 60);
+  if (hrs < 24) return `${hrs} ${t("hAgo")}`;
+  const days = Math.floor(hrs / 24);
+  return `${days} ${t("dAgo")}`;
+}
+
+function timeLeft(expiresAt) {
+  const diff = expiresAt - Date.now();
+  if (diff <= 0) return null;
+  const min = Math.ceil(diff / 60000);
+  if (min < 60) return `${min} ${state.lang === "ar" ? "د" : "min"}`;
+  const hrs = Math.ceil(min / 60);
+  return `${hrs} ${state.lang === "ar" ? "س" : "h"}`;
+}
+
+function expMillis(choice) {
+  const now = Date.now();
+  switch(choice) {
+    case "1h": return now + 3600e3;
+    case "3h": return now + 3 * 3600e3;
+    case "today": {
+      const d = new Date();
+      d.setHours(23,59,59,999);
+      return d.getTime();
+    }
+    case "24h": return now + 24 * 3600e3;
+    default: return now + 3 * 3600e3;
+  }
+}
+
+function applyLangToDom() {
+  const dir = state.lang === "ar" ? "rtl" : "ltr";
+  document.documentElement.lang = state.lang;
+  document.documentElement.dir = dir;
+  document.body.className = `lang-${state.lang} bg-cream text-ink font-arabic min-h-screen flex flex-col`;
+  if (state.lang !== "ar") document.body.classList.remove("font-arabic");
+
+  document.getElementById("taglineText").textContent = t("tagline");
+  document.getElementById("heroTagline").textContent = t("heroTagline");
+  document.getElementById("heroSub").textContent = t("heroSub");
+  document.getElementById("navPostBtnText").textContent = t("navPost");
+  document.getElementById("modeRequestText").textContent = t("modeRequest");
+  document.getElementById("modeServiceText").textContent = t("modeService");
+  document.getElementById("searchInput").placeholder = t("searchPlaceholder");
+  document.getElementById("emptyTitle").textContent = t("emptyTitle");
+  document.getElementById("emptyDesc").textContent = t("emptyDesc");
+  document.getElementById("footerText").textContent = t("footer");
+  document.getElementById("lblMode").textContent = t("lblMode");
+  document.getElementById("lblCategory").textContent = t("lblCategory");
+  document.getElementById("lblTitleField").textContent = t("lblTitleField");
+  document.getElementById("lblDetails").textContent = t("lblDetails");
+  document.getElementById("lblWilaya").textContent = t("lblWilaya");
+  document.getElementById("lblCommune").textContent = t("lblCommune");
+  document.getElementById("lblPhone").textContent = t("lblPhone");
+  document.getElementById("lblExpiration").textContent = t("lblExpiration");
+  document.getElementById("titleInput").placeholder = t("titlePlaceholder");
+  document.getElementById("detailsInput").placeholder = t("detailsPlaceholder");
+  document.getElementById("communeInput").placeholder = t("communePlaceholder");
+  document.getElementById("phoneError").textContent = t("phoneError");
+  document.getElementById("submitBtnText").textContent = t("submitBtn");
+
+  document.querySelectorAll(".lang-btn").forEach(b => {
+    const active = b.dataset.lang === state.lang;
+    b.classList.toggle("bg-moss-500", active);
+    b.classList.toggle("text-white", active);
+    b.classList.toggle("text-inks", !active);
+  });
+
+  buildWilayaOptions();
+  buildCategoryChips();
+  buildCategorySelect();
+  buildExpChips();
+  buildFormModeButtons();
+  updateModalTitle();
+  renderFeed();
+}
+
+function buildWilayaOptions() {
+  const filterSel = document.getElementById("wilayaFilter");
+  const formSel = document.getElementById("wilayaSelect");
+  const prevFilter = filterSel.value || "all";
+  const prevForm = formSel.value || "34";
+  filterSel.innerHTML = "";
+  formSel.innerHTML = "";
+  const optAll = document.createElement("option");
+  optAll.value = "all";
+  optAll.textContent = t("allWilayas");
+  filterSel.appendChild(optAll);
+  WILAYAS.forEach(w => {
+    const label = `${w.c} — ${state.lang === "ar" ? w.ar : w.fr}`;
+    const o1 = document.createElement("option");
+    o1.value = w.c; o1.textContent = label;
+    filterSel.appendChild(o1);
+    const o2 = document.createElement("option");
+    o2.value = w.c; o2.textContent = label;
+    formSel.appendChild(o2);
+  });
+  filterSel.value = prevFilter;
+  formSel.value = prevForm !== "all" ? prevForm : "34";
+}
+
+function buildCategoryChips() {
+  const wrap = document.getElementById("categoryChips");
+  wrap.innerHTML = "";
+  const allChip = document.createElement("button");
+  allChip.className = "chip whitespace-nowrap px-3.5 py-2 rounded-full text-xs font-bold border shrink-0";
+  allChip.dataset.cat = "all";
+  allChip.textContent = t("allCategories");
+  wrap.appendChild(allChip);
+  CATEGORIES.forEach(c => {
+    const chip = document.createElement("button");
+    chip.className = "chip whitespace-nowrap px-3.5 py-2 rounded-full text-xs font-bold border shrink-0 flex items-center gap-1.5";
+    chip.dataset.cat = c.k;
+    chip.innerHTML = `<i data-lucide="${c.icon}" class="w-3.5 h-3.5"></i><span>${t("cat_" + c.k)}</span>`;
+    wrap.appendChild(chip);
+  });
+  refreshChipStyles();
+  if (window.lucide) lucide.createIcons();
+}
+
+function refreshChipStyles() {
+  document.querySelectorAll("#categoryChips .chip").forEach(chip => {
+    const active = chip.dataset.cat === state.categoryFilter;
+    chip.classList.toggle("bg-moss-500", active);
+    chip.classList.toggle("text-white", active);
+    chip.classList.toggle("border-moss-500", active);
+    chip.classList.toggle("bg-white", !active);
+    chip.classList.toggle("text-inks", !active);
+    chip.classList.toggle("border-clay2", !active);
+  });
+}
+
+function buildCategorySelect() {
+  const sel = document.getElementById("categorySelect");
+  const prev = sel.value;
+  sel.innerHTML = `<option value="" disabled ${!prev ? "selected" : ""}>${t("categoryPlaceholder")}</option>`;
+  CATEGORIES.forEach(c => {
+    const o = document.createElement("option");
+    o.value = c.k;
+    o.textContent = t("cat_" + c.k);
+    sel.appendChild(o);
+  });
+  if (prev) sel.value = prev;
+}
+
+function buildExpChips() {
+  const wrap = document.getElementById("expChips");
+  wrap.innerHTML = "";
+  const opts = [["1h","exp1h"],["3h","exp3h"],["today","expToday"],["24h","exp24h"]];
+  opts.forEach(([val, key]) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.dataset.exp = val;
+    b.className = "chip py-2 rounded-lg border-2 text-xs font-bold";
+    b.textContent = t(key);
+    wrap.appendChild(b);
+  });
+  refreshExpStyles();
+}
+function refreshExpStyles() {
+  document.querySelectorAll("#expChips .chip").forEach(b => {
+    const active = b.dataset.exp === state.expChoice;
+    b.classList.toggle("bg-moss-50", active);
+    b.classList.toggle("border-moss-500", active);
+    b.classList.toggle("text-moss-700", active);
+    b.classList.toggle("border-clay2", !active);
+    b.classList.toggle("text-inks", !active);
+  });
+}
+
+function buildFormModeButtons() {
+  document.querySelectorAll(".formmode-btn").forEach(b => {
+    b.textContent = b.dataset.formmode === "request" ? t("modeRequestFull") : t("modeServiceFull");
+  });
+  refreshFormModeStyles();
+}
+function refreshFormModeStyles() {
+  document.querySelectorAll(".formmode-btn").forEach(b => {
+    const active = b.dataset.formmode === state.formMode;
+    b.classList.toggle("bg-moss-500", active);
+    b.classList.toggle("text-white", active);
+    b.classList.toggle("border-moss-500", active);
+    b.classList.toggle("bg-white", !active);
+    b.classList.toggle("text-inks", !active);
+    b.classList.toggle("border-clay2", !active);
+  });
+}
+
+function updateModalTitle() {
+  document.getElementById("modalTitle").textContent = state.formMode === "request" ? t("modalTitleRequest") : t("modalTitleService");
+}
+
+document.querySelectorAll(".lang-btn").forEach(b => {
+  b.addEventListener("click", () => { state.lang = b.dataset.lang; applyLangToDom(); });
+});
+
+document.querySelectorAll(".mode-btn").forEach(b => {
+  b.addEventListener("click", () => {
+    state.mode = b.dataset.mode;
+    refreshModeStyles();
+    renderFeed();
+  });
+});
+function refreshModeStyles() {
+  document.querySelectorAll(".mode-btn").forEach(b => {
+    const active = b.dataset.mode === state.mode;
+    b.classList.toggle("bg-clay", active);
+  });
+}
+
+document.getElementById("categoryChips").addEventListener("click", e => {
+  const chip = e.target.closest(".chip");
+  if (!chip) return;
+  state.categoryFilter = chip.dataset.cat;
+  refreshChipStyles();
+  renderFeed();
+});
+
+document.getElementById("wilayaFilter").addEventListener("change", e => {
+  state.wilayaFilter = e.target.value;
+  attachFirebaseListener();
+});
+
+document.getElementById("searchInput").addEventListener("input", e => {
+  state.search = e.target.value.trim().toLowerCase();
+  renderFeed();
+});
+
+document.querySelectorAll(".formmode-btn").forEach(b => {
+  b.addEventListener("click", () => {
+    state.formMode = b.dataset.formmode;
+    refreshFormModeStyles();
+    updateModalTitle();
+  });
+});
+
+document.getElementById("expChips").addEventListener("click", e => {
+  const chip = e.target.closest(".chip");
+  if (!chip) return;
+  state.expChoice = chip.dataset.exp;
+  refreshExpStyles();
+});
+
+function openModal() {
+  document.getElementById("modalOverlay").classList.remove("hidden");
+  document.body.style.overflow = "hidden";
+}
+function closeModal() {
+  document.getElementById("modalOverlay").classList.add("hidden");
+  document.body.style.overflow = "";
+  document.getElementById("postForm").reset();
+  document.getElementById("phoneError").classList.add("hidden");
+}
+document.getElementById("openPostModalBtn").addEventListener("click", () => {
+  state.formMode = state.mode;
+  refreshFormModeStyles();
+  updateModalTitle();
+  openModal();
+});
+document.getElementById("closeModalBtn").addEventListener("click", closeModal);
+document.getElementById("modalOverlay").addEventListener("click", e => {
+  if (e.target.id === "modalOverlay") closeModal();
+});
+
+document.getElementById("postForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const title = document.getElementById("titleInput").value.trim();
+  const details = document.getElementById("detailsInput").value.trim();
+  const category = document.getElementById("categorySelect").value;
+  const wilayaCode = document.getElementById("wilayaSelect").value;
+  const commune = document.getElementById("communeInput").value.trim();
+  const phone = document.getElementById("phoneInput").value.trim();
+  const errEl = document.getElementById("phoneError");
+
+  if (!title || !category || !wilayaCode || !commune || !phone) {
+    showToast(t("toastFillFields"), "warn");
+    return;
+  }
+  if (!isValidAlgerianPhone(phone)) {
+    errEl.classList.remove("hidden");
+    return;
+  }
+  errEl.classList.add("hidden");
+
+  const post = {
+    mode: state.formMode,
+    category,
+    title,
+    details,
+    wilayaCode: Number(wilayaCode),
+    commune,
+    phone: normalizePhone(phone),
+    createdAt: Date.now(),
+    expiresAt: expMillis(state.expChoice),
+    fulfilled: false
+  };
+
+  const postsRef = ref(db, `posts/${wilayaCode}`);
+  push(postsRef, post).then(snap => {
+    addMyPost(snap.key, wilayaCode);
+    closeModal();
+    showToast(t("toastPostCreated"), "success");
+  }).catch(() => {
+    showToast(t("toastFillFields"), "warn");
+  });
+});
+
+document.getElementById("phoneInput").addEventListener("input", () => {
+  document.getElementById("phoneError").classList.add("hidden");
+});
+
+function showToast(msg, kind = "info") {
+  const wrap = document.getElementById("toastContainer");
+  const el = document.createElement("div");
+  const colors = {
+    success: "bg-moss-600",
+    warn: "bg-urgent-600",
+    info: "bg-ink"
+  };
+  el.className = `${colors[kind] || colors.info} text-white text-sm font-semibold px-4 py-2.5 rounded-full shadow-soft animate-toastin pointer-events-auto flex items-center gap-2`;
+  const iconMap = { success: "check-circle", warn: "alert-circle", info: "radio" };
+  el.innerHTML = `<i data-lucide="${iconMap[kind] || "radio"}" class="w-4 h-4"></i><span>${msg}</span>`;
+  wrap.appendChild(el);
+  if (window.lucide) lucide.createIcons();
+  setTimeout(() => {
+    el.style.transition = "opacity .3s, transform .3s";
+    el.style.opacity = "0";
+    el.style.transform = "translateY(-8px)";
+    setTimeout(() => el.remove(), 300);
+  }, 3200);
+}
+
+function attachFirebaseListener() {
+  if (state.activeWilayaRef) {
+    off(state.activeWilayaRef);
+  }
+  state.posts = {};
+  state.firstLoadDone = false;
+
+  const path = state.wilayaFilter === "all" ? "posts" : `posts/${state.wilayaFilter}`;
+  const dataRef = ref(db, path);
+  state.activeWilayaRef = dataRef;
+
+  onValue(dataRef, snapshot => {
+    const val = snapshot.val() || {};
+    const flat = {};
+    if (state.wilayaFilter === "all") {
+      Object.keys(val).forEach(wCode => {
+        const posts = val[wCode] || {};
+        Object.keys(posts).forEach(pid => {
+          flat[pid] = { ...posts[pid], _id: pid, _wilayaCode: Number(wCode) };
+        });
+      });
+    } else {
+      Object.keys(val).forEach(pid => {
+        flat[pid] = { ...val[pid], _id: pid, _wilayaCode: Number(state.wilayaFilter) };
+      });
+    }
+    state.posts = flat;
+    renderFeed();
+    state.firstLoadDone = true;
+  });
+
+  onChildAdded(dataRef, () => {
+    if (!state.firstLoadDone) return;
+    if (state.wilayaFilter !== "all") showToast(t("toastNewPost"), "info");
+    pulseHero();
+  }, () => {});
+}
+
+function renderFeed() {
+  const grid = document.getElementById("feedGrid");
+  const empty = document.getElementById("emptyState");
+  const now = Date.now();
+
+  let list = Object.values(state.posts).filter(p => {
+    if (p.mode !== state.mode) return false;
+    if (p.fulfilled) return false;
+    if (p.expiresAt && p.expiresAt < now) return false;
+    if (state.categoryFilter !== "all" && p.category !== state.categoryFilter) return false;
+    if (state.search) {
+      const hay = `${p.title || ""} ${p.details || ""} ${p.commune || ""}`.toLowerCase();
+      if (!hay.includes(state.search)) return false;
+    }
+    return true;
+  });
+
+  list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+
+  grid.innerHTML = "";
+
+  if (list.length === 0) {
+    empty.classList.remove("hidden");
+    empty.classList.add("flex");
+    if (window.lucide) lucide.createIcons();
+    return;
+  }
+  empty.classList.add("hidden");
+  empty.classList.remove("flex");
+
+  list.forEach(post => grid.appendChild(renderCard(post)));
+  if (window.lucide) lucide.createIcons();
+}
+
+function renderCard(post) {
+  const cat = CATEGORIES.find(c => c.k === post.category) || CATEGORIES[5];
+  const card = document.createElement("div");
+  card.className = "card-organic bg-white border border-clay2 shadow-softer hover:shadow-soft transition-all p-4 flex flex-col gap-3";
+
+  const mine = isMyPost(post._id);
+  const left = timeLeft(post.expiresAt);
+
+  const waText = post.mode === "request" ? t("waGreetingRequest") : t("waGreetingService");
+  const waLink = toWhatsAppLink(post.phone, `${waText} "${post.title}"`);
+  const telLink = `tel:${post.phone}`;
+
+  const badgeColor = post.mode === "request" ? "bg-urgent-50 text-urgent-600" : "bg-moss-50 text-moss-700";
+
+  card.innerHTML = `
+    <div class="flex items-start justify-between gap-2">
+      <div class="flex items-center gap-2">
+        <div class="w-9 h-9 rounded-full ${badgeColor} flex items-center justify-center shrink-0">
+          <i data-lucide="${cat.icon}" class="w-4.5 h-4.5"></i>
+        </div>
+        <div>
+          <p class="text-[11px] font-bold ${post.mode === "request" ? "text-urgent-600" : "text-moss-700"}">${t("cat_" + cat.k)}</p>
+          <p class="text-[11px] text-inkfaint">${wilayaName(post._wilayaCode)} · ${post.commune || ""}</p>
+        </div>
+      </div>
+      <span class="text-[10px] text-inkfaint whitespace-nowrap">${timeAgo(post.createdAt || Date.now())}</span>
+    </div>
+    <div>
+      <h3 class="font-display font-bold text-sm text-ink leading-snug">${escapeHtml(post.title)}</h3>
+      ${post.details ? `<p class="text-xs text-inks mt-1 leading-relaxed">${escapeHtml(post.details)}</p>` : ""}
+    </div>
+    <div class="flex items-center justify-between text-[11px] text-inkfaint">
+      <span class="flex items-center gap-1"><i data-lucide="clock" class="w-3 h-3"></i>${left ? `${t("expiresIn")} ${left}` : t("expired")}</span>
+    </div>
+    <div class="flex gap-2 mt-1">
+      <a href="${telLink}" class="flex-1 flex items-center justify-center gap-1.5 bg-ink text-white text-xs font-bold py-2.5 rounded-xl hover:opacity-90 transition-opacity">
+        <i data-lucide="phone" class="w-3.5 h-3.5"></i>${t("callNow")}
+      </a>
+      <a href="${waLink}" target="_blank" rel="noopener" class="flex-1 flex items-center justify-center gap-1.5 bg-moss-500 text-white text-xs font-bold py-2.5 rounded-xl hover:bg-moss-600 transition-colors">
+        <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>${t("whatsapp")}
+      </a>
+    </div>
+    ${mine ? `
+    <div class="flex gap-2 pt-2 border-t border-clay2">
+      <button data-action="fulfill" data-id="${post._id}" data-wc="${post._wilayaCode}" class="flex-1 text-[11px] font-bold text-moss-700 bg-moss-50 py-2 rounded-lg hover:bg-moss-100 transition-colors">${t("markFulfilled")}</button>
+      <button data-action="delete" data-id="${post._id}" data-wc="${post._wilayaCode}" class="flex-1 text-[11px] font-bold text-urgent-600 bg-urgent-50 py-2 rounded-lg hover:bg-urgent-100 transition-colors">${t("deleteBtn")}</button>
+    </div>` : ""}
+  `;
+  return card;
+}
+
+function escapeHtml(str) {
+  const d = document.createElement("div");
+  d.textContent = str || "";
+  return d.innerHTML;
+}
+
+document.getElementById("feedGrid").addEventListener("click", e => {
+  const btn = e.target.closest("button[data-action]");
+  if (!btn) return;
+  const id = btn.dataset.id;
+  const wc = btn.dataset.wc;
+  const postRef = ref(db, `posts/${wc}/${id}`);
+  if (btn.dataset.action === "delete") {
+    remove(postRef).then(() => {
+      removeMyPost(id);
+      showToast(t("toastPostDeleted"), "info");
+    });
+  } else if (btn.dataset.action === "fulfill") {
+    update(postRef, { fulfilled: true }).then(() => {
+      showToast(t("toastPostFulfilled"), "success");
+    });
+  }
+});
+
+function pulseHero() {
+  heroPulseFlag = true;
+}
+let heroPulseFlag = false;
+
+function setupLogoCanvas() {
+  const canvas = document.getElementById("logoCanvas");
+  const ctx = canvas.getContext("2d");
+  const nodes = [{x:9,y:10,r:4,c:"#1F8A5F"},{x:26,y:14,r:3,c:"#2D7D9A"},{x:15,y:26,r:3.4,c:"#E8935A"}];
+  ctx.strokeStyle = "#1F8A5F55";
+  ctx.lineWidth = 1.4;
+  ctx.beginPath();
+  ctx.moveTo(nodes[0].x, nodes[0].y); ctx.lineTo(nodes[1].x, nodes[1].y);
+  ctx.moveTo(nodes[0].x, nodes[0].y); ctx.lineTo(nodes[2].x, nodes[2].y);
+  ctx.stroke();
+  nodes.forEach(n => {
+    ctx.beginPath();
+    ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+    ctx.fillStyle = n.c;
+    ctx.fill();
+  });
+}
+
+function setupHeroCanvas() {
+  const canvas = document.getElementById("heroCanvas");
+  const ctx = canvas.getContext("2d");
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let w, h;
+  function resize() {
+    const rect = canvas.parentElement.getBoundingClientRect();
+    w = canvas.width = rect.width * devicePixelRatio;
+    h = canvas.height = rect.height * devicePixelRatio;
+    canvas.style.width = rect.width + "px";
+    canvas.style.height = rect.height + "px";
+  }
+  resize();
+  window.addEventListener("resize", resize);
+
+  const N = 22;
+  const nodes = Array.from({length: N}, () => ({
+    x: Math.random(), y: Math.random(),
+    vx: (Math.random() - 0.5) * 0.0004,
+    vy: (Math.random() - 0.5) * 0.0004,
+    pulse: Math.random() * Math.PI * 2
+  }));
+  const palette = ["#1F8A5F", "#2D7D9A", "#E8935A"];
+
+  function frame() {
+    ctx.clearRect(0, 0, w, h);
+    nodes.forEach(n => {
+      if (!reduceMotion) {
+        n.x += n.vx; n.y += n.vy;
+        if (n.x < 0 || n.x > 1) n.vx *= -1;
+        if (n.y < 0 || n.y > 1) n.vy *= -1;
+        n.pulse += 0.01;
+      }
+    });
+    for (let i = 0; i < N; i++) {
+      for (let j = i + 1; j < N; j++) {
+        const a = nodes[i], b = nodes[j];
+        const dx = (a.x - b.x) * w, dy = (a.y - b.y) * h;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        const maxDist = w * 0.16;
+        if (dist < maxDist) {
+          ctx.strokeStyle = `rgba(31,138,95,${(1 - dist / maxDist) * 0.18})`;
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(a.x * w, a.y * h);
+          ctx.lineTo(b.x * w, b.y * h);
+          ctx.stroke();
+        }
+      }
+    }
+    nodes.forEach((n, i) => {
+      const boost = heroPulseFlag && i % 5 === 0 ? 1.8 : 1;
+      const r = (2 + Math.sin(n.pulse) * 0.8) * (w / 900) * boost;
+      ctx.beginPath();
+      ctx.arc(n.x * w, n.y * h, Math.max(r, 1.5), 0, Math.PI * 2);
+      ctx.fillStyle = palette[i % palette.length] + "66";
+      ctx.fill();
+    });
+    heroPulseFlag = false;
+    requestAnimationFrame(frame);
+  }
+  frame();
+}
+
+setInterval(() => {
+  renderFeed();
+}, 30000);
+
+setupLogoCanvas();
+setupHeroCanvas();
+attachFirebaseListener();
+refreshModeStyles();
+applyLangToDom();
+if (window.lucide) lucide.createIcons();
+</script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<script>
+  if (window.lucide) lucide.createIcons();
+</script>
+</body>
+</html>
