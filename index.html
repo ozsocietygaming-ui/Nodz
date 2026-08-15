@@ -122,6 +122,7 @@ tailwind.config = {
       <input id="searchInput" type="text" class="w-full bg-white border border-clay2 rounded-xl py-2.5 ps-10 pe-3 text-sm placeholder:text-inkfaint focus:border-moss-400" />
     </div>
     <select id="wilayaFilter" class="bg-white border border-clay2 rounded-xl py-2.5 px-3 text-sm font-medium min-w-[9rem]"></select>
+    <select id="communeFilter" class="bg-white border border-clay2 rounded-xl py-2.5 px-3 text-sm font-medium min-w-[9rem]"></select>
   </div>
   <div id="categoryChips" class="mt-3 flex gap-2 overflow-x-auto no-scrollbar pb-1"></div>
 </section>
@@ -203,7 +204,7 @@ tailwind.config = {
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, push, onValue, onChildAdded, update, remove, off, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getDatabase, ref, push, onValue, onChildAdded, update, remove, off, serverTimestamp, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAKnmSoB5-cdVtf74NsZYVgu-yext9SVi4",
@@ -284,7 +285,13 @@ const I18N = {
     toastPostCreated: "تم النشر بنجاح", toastPostDeleted: "تم الحذف", toastPostFulfilled: "تم وضع العلامة كمنجَز",
     toastNewPost: "منشور جديد قريب منك", toastFillFields: "يرجى ملء جميع الحقول المطلوبة",
     waGreetingRequest: "مرحبًا، شاهدت طلبك على Nodz بخصوص",
-    waGreetingService: "مرحبًا، شاهدت خدمتك على Nodz بخصوص"
+    waGreetingService: "مرحبًا، شاهدت خدمتك على Nodz بخصوص",
+    allCommunes: "كل البلديات",
+    reportBtn: "إبلاغ", reportedToast: "شكرًا، تم استلام بلاغك",
+    alreadyReported: "تم الإبلاغ مسبقًا من هذا الجهاز",
+    autoHiddenNote: "تم إخفاء هذا المنشور بعد عدة بلاغات",
+    frequentBadge: "ناشر محلي معروف",
+    rateLimitToast: "لقد نشرت عدة طلبات في وقت قصير، حاول لاحقًا"
   },
   fr: {
     tagline: "Besoins locaux, connexions en temps réel à travers l'Algérie",
@@ -318,7 +325,13 @@ const I18N = {
     toastPostCreated: "Publié avec succès", toastPostDeleted: "Supprimé", toastPostFulfilled: "Marqué comme résolu",
     toastNewPost: "Nouvelle publication près de vous", toastFillFields: "Veuillez remplir tous les champs requis",
     waGreetingRequest: "Bonjour, j'ai vu votre demande sur Nodz concernant",
-    waGreetingService: "Bonjour, j'ai vu votre service sur Nodz concernant"
+    waGreetingService: "Bonjour, j'ai vu votre service sur Nodz concernant",
+    allCommunes: "Toutes les communes",
+    reportBtn: "Signaler", reportedToast: "Merci, votre signalement est enregistré",
+    alreadyReported: "Déjà signalé depuis cet appareil",
+    autoHiddenNote: "Publication masquée après plusieurs signalements",
+    frequentBadge: "Habitué du quartier",
+    rateLimitToast: "Vous avez publié plusieurs annonces d'affilée, réessayez plus tard"
   },
   en: {
     tagline: "Local Needs, Real-Time Connections across Algeria",
@@ -352,7 +365,13 @@ const I18N = {
     toastPostCreated: "Posted successfully", toastPostDeleted: "Deleted", toastPostFulfilled: "Marked as fulfilled",
     toastNewPost: "New post near you", toastFillFields: "Please fill all required fields",
     waGreetingRequest: "Hi, I saw your request on Nodz about",
-    waGreetingService: "Hi, I saw your service on Nodz about"
+    waGreetingService: "Hi, I saw your service on Nodz about",
+    allCommunes: "All communes",
+    reportBtn: "Report", reportedToast: "Thanks, your report was recorded",
+    alreadyReported: "Already reported from this device",
+    autoHiddenNote: "Post hidden after multiple reports",
+    frequentBadge: "Frequent local poster",
+    rateLimitToast: "You've posted several times in a row, try again shortly"
   }
 };
 
@@ -360,14 +379,48 @@ const state = {
   lang: (navigator.language || "ar").startsWith("fr") ? "fr" : (navigator.language || "ar").startsWith("en") ? "en" : "ar",
   mode: "request",
   wilayaFilter: "all",
+  communeFilter: "all",
   categoryFilter: "all",
   search: "",
   posts: {},
+  phoneStats: {},
   formMode: "request",
   expChoice: "3h",
   activeWilayaRef: null,
   firstLoadDone: false
 };
+
+const FLAG_THRESHOLD = 3;
+const FREQUENT_THRESHOLD = 5;
+const RATE_LIMIT_MAX = 5;
+const RATE_LIMIT_WINDOW_MS = 5 * 60 * 1000;
+
+function myFlaggedIds() {
+  try { return JSON.parse(localStorage.getItem("nodz_flagged") || "[]"); } catch(e) { return []; }
+}
+function hasFlagged(id) { return myFlaggedIds().includes(id); }
+function markFlagged(id) {
+  const list = myFlaggedIds();
+  list.push(id);
+  localStorage.setItem("nodz_flagged", JSON.stringify(list));
+}
+
+function myRecentPostTimes() {
+  try { return JSON.parse(localStorage.getItem("nodz_post_times") || "[]"); } catch(e) { return []; }
+}
+function isRateLimited() {
+  const now = Date.now();
+  const recent = myRecentPostTimes().filter(ts => now - ts < RATE_LIMIT_WINDOW_MS);
+  return recent.length >= RATE_LIMIT_MAX;
+}
+function recordPostTime() {
+  const now = Date.now();
+  const recent = myRecentPostTimes().filter(ts => now - ts < RATE_LIMIT_WINDOW_MS);
+  recent.push(now);
+  localStorage.setItem("nodz_post_times", JSON.stringify(recent));
+}
+
+function phoneKey(phone) { return "p" + phone; }
 
 function t(key) { return I18N[state.lang][key] || key; }
 
@@ -480,6 +533,7 @@ function applyLangToDom() {
   });
 
   buildWilayaOptions();
+  buildCommuneFilterOptions();
   buildCategoryChips();
   buildCategorySelect();
   buildExpChips();
@@ -510,6 +564,29 @@ function buildWilayaOptions() {
   });
   filterSel.value = prevFilter;
   formSel.value = prevForm !== "all" ? prevForm : "34";
+}
+
+function buildCommuneFilterOptions() {
+  const sel = document.getElementById("communeFilter");
+  const prev = state.communeFilter;
+  const communes = new Set();
+  Object.values(state.posts).forEach(p => {
+    if (p.commune) communes.add(p.commune);
+  });
+  const sorted = Array.from(communes).sort((a, b) => a.localeCompare(b, state.lang));
+  sel.innerHTML = "";
+  const optAll = document.createElement("option");
+  optAll.value = "all";
+  optAll.textContent = t("allCommunes");
+  sel.appendChild(optAll);
+  sorted.forEach(name => {
+    const o = document.createElement("option");
+    o.value = name;
+    o.textContent = name;
+    sel.appendChild(o);
+  });
+  state.communeFilter = sorted.includes(prev) ? prev : "all";
+  sel.value = state.communeFilter;
 }
 
 function buildCategoryChips() {
@@ -631,7 +708,13 @@ document.getElementById("categoryChips").addEventListener("click", e => {
 
 document.getElementById("wilayaFilter").addEventListener("change", e => {
   state.wilayaFilter = e.target.value;
+  state.communeFilter = "all";
   attachFirebaseListener();
+});
+
+document.getElementById("communeFilter").addEventListener("change", e => {
+  state.communeFilter = e.target.value;
+  renderFeed();
 });
 
 document.getElementById("searchInput").addEventListener("input", e => {
@@ -695,6 +778,11 @@ document.getElementById("postForm").addEventListener("submit", e => {
   }
   errEl.classList.add("hidden");
 
+  if (isRateLimited()) {
+    showToast(t("rateLimitToast"), "warn");
+    return;
+  }
+
   const post = {
     mode: state.formMode,
     category,
@@ -708,9 +796,12 @@ document.getElementById("postForm").addEventListener("submit", e => {
     fulfilled: false
   };
 
+  const cleanPhone = normalizePhone(phone);
   const postsRef = ref(db, `posts/${wilayaCode}`);
   push(postsRef, post).then(snap => {
     addMyPost(snap.key, wilayaCode);
+    recordPostTime();
+    update(ref(db, `phoneStats/${phoneKey(cleanPhone)}`), { count: increment(1) });
     closeModal();
     showToast(t("toastPostCreated"), "success");
   }).catch(() => {
@@ -770,6 +861,7 @@ function attachFirebaseListener() {
       });
     }
     state.posts = flat;
+    buildCommuneFilterOptions();
     renderFeed();
     state.firstLoadDone = true;
   });
@@ -790,7 +882,9 @@ function renderFeed() {
     if (p.mode !== state.mode) return false;
     if (p.fulfilled) return false;
     if (p.expiresAt && p.expiresAt < now) return false;
+    if ((p.flags || 0) >= FLAG_THRESHOLD) return false;
     if (state.categoryFilter !== "all" && p.category !== state.categoryFilter) return false;
+    if (state.communeFilter !== "all" && p.commune !== state.communeFilter) return false;
     if (state.search) {
       const hay = `${p.title || ""} ${p.details || ""} ${p.commune || ""}`.toLowerCase();
       if (!hay.includes(state.search)) return false;
@@ -828,6 +922,8 @@ function renderCard(post) {
   const telLink = `tel:${post.phone}`;
 
   const badgeColor = post.mode === "request" ? "bg-urgent-50 text-urgent-600" : "bg-moss-50 text-moss-700";
+  const flagged = hasFlagged(post._id);
+  const isFrequent = (state.phoneStats[phoneKey(post.phone)]?.count || 0) >= FREQUENT_THRESHOLD;
 
   card.innerHTML = `
     <div class="flex items-start justify-between gap-2">
@@ -840,8 +936,16 @@ function renderCard(post) {
           <p class="text-[11px] text-inkfaint">${wilayaName(post._wilayaCode)} · ${post.commune || ""}</p>
         </div>
       </div>
-      <span class="text-[10px] text-inkfaint whitespace-nowrap">${timeAgo(post.createdAt || Date.now())}</span>
+      <div class="flex items-center gap-1.5 shrink-0">
+        <span class="text-[10px] text-inkfaint whitespace-nowrap">${timeAgo(post.createdAt || Date.now())}</span>
+        <button data-action="flag" data-id="${post._id}" data-wc="${post._wilayaCode}" ${flagged ? "disabled" : ""} class="w-6 h-6 rounded-full flex items-center justify-center ${flagged ? "text-inkfaint" : "text-inkfaint hover:text-urgent-600 hover:bg-urgent-50"} transition-colors" aria-label="${t("reportBtn")}" title="${flagged ? t("alreadyReported") : t("reportBtn")}">
+          <i data-lucide="flag" class="w-3.5 h-3.5"></i>
+        </button>
+      </div>
     </div>
+    ${isFrequent ? `<div class="flex items-center gap-1 text-[10px] font-bold text-spore-600 bg-spore-50 self-start px-2 py-1 rounded-full -mt-1">
+      <i data-lucide="badge-check" class="w-3 h-3"></i>${t("frequentBadge")}
+    </div>` : ""}
     <div>
       <h3 class="font-display font-bold text-sm text-ink leading-snug">${escapeHtml(post.title)}</h3>
       ${post.details ? `<p class="text-xs text-inks mt-1 leading-relaxed">${escapeHtml(post.details)}</p>` : ""}
@@ -886,6 +990,15 @@ document.getElementById("feedGrid").addEventListener("click", e => {
   } else if (btn.dataset.action === "fulfill") {
     update(postRef, { fulfilled: true }).then(() => {
       showToast(t("toastPostFulfilled"), "success");
+    });
+  } else if (btn.dataset.action === "flag") {
+    if (hasFlagged(id)) {
+      showToast(t("alreadyReported"), "info");
+      return;
+    }
+    markFlagged(id);
+    update(postRef, { flags: increment(1) }).then(() => {
+      showToast(t("reportedToast"), "info");
     });
   }
 });
@@ -981,8 +1094,16 @@ setInterval(() => {
   renderFeed();
 }, 30000);
 
+function attachPhoneStatsListener() {
+  onValue(ref(db, "phoneStats"), snapshot => {
+    state.phoneStats = snapshot.val() || {};
+    renderFeed();
+  });
+}
+
 setupLogoCanvas();
 setupHeroCanvas();
+attachPhoneStatsListener();
 attachFirebaseListener();
 refreshModeStyles();
 applyLangToDom();
