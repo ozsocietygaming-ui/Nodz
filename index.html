@@ -177,7 +177,7 @@ tailwind.config = {
         </div>
         <div>
           <label id="lblCommune" class="block text-xs font-bold text-inks mb-1.5"></label>
-          <input id="communeInput" type="text" required class="w-full bg-white border border-clay2 rounded-xl py-2.5 px-3 text-sm" />
+          <select id="communeInput" required class="w-full bg-white border border-clay2 rounded-xl py-2.5 px-3 text-sm"></select>
         </div>
       </div>
       <div>
@@ -201,6 +201,80 @@ tailwind.config = {
 </div>
 
 <div id="toastContainer" class="fixed top-4 inset-x-0 z-[60] flex flex-col items-center gap-2 px-4 pointer-events-none"></div>
+
+<div id="adminOverlay" class="hidden fixed inset-0 bg-cream z-[70] overflow-y-auto">
+  <div id="adminGateView" class="min-h-screen flex items-center justify-center p-6">
+    <div class="bg-white rounded-3xl shadow-soft border border-clay2 p-8 w-full max-w-sm">
+      <div class="flex items-center gap-2 mb-4">
+        <i data-lucide="lock" class="w-5 h-5 text-moss-600"></i>
+        <h2 class="font-display font-bold text-lg" id="adminGateTitle"></h2>
+      </div>
+      <p id="adminGateSub" class="text-sm text-inks mb-4"></p>
+      <input id="adminPasswordInput" type="password" class="w-full bg-cream border border-clay2 rounded-xl py-2.5 px-3 text-sm mb-2" />
+      <p id="adminGateError" class="hidden text-xs text-urgent-600 font-semibold mb-2"></p>
+      <button id="adminUnlockBtn" class="w-full bg-moss-500 hover:bg-moss-600 text-white font-bold py-2.5 rounded-xl transition-all"></button>
+      <button id="adminExitBtn1" class="w-full text-inkfaint text-xs font-semibold mt-3 hover:text-ink transition-colors"></button>
+    </div>
+  </div>
+
+  <div id="adminDashboardView" class="hidden max-w-6xl mx-auto px-4 sm:px-6 py-6">
+    <div class="flex items-center justify-between mb-5 gap-3 flex-wrap">
+      <h1 class="font-display font-extrabold text-xl text-moss-700 flex items-center gap-2">
+        <i data-lucide="shield" class="w-5 h-5"></i><span id="adminDashTitle"></span>
+      </h1>
+      <div class="flex items-center gap-2">
+        <button id="adminExitBtn2" class="text-xs font-bold bg-white border border-clay2 px-3 py-2 rounded-full hover:bg-clay transition-colors"></button>
+        <button id="adminLogoutBtn" class="text-xs font-bold bg-urgent-50 text-urgent-600 px-3 py-2 rounded-full hover:bg-urgent-100 transition-colors"></button>
+      </div>
+    </div>
+    <div class="flex flex-col sm:flex-row gap-3 mb-4">
+      <input id="adminSearchInput" type="text" class="flex-1 bg-white border border-clay2 rounded-xl py-2.5 px-3 text-sm" />
+      <select id="adminWilayaFilter" class="bg-white border border-clay2 rounded-xl py-2.5 px-3 text-sm min-w-[9rem]"></select>
+    </div>
+    <div id="adminList" class="space-y-2"></div>
+  </div>
+</div>
+
+<div id="adminEditOverlay" class="hidden fixed inset-0 bg-ink/40 backdrop-blur-sm z-[80] flex items-end sm:items-center justify-center p-0 sm:p-4">
+  <div class="bg-cream w-full sm:max-w-lg sm:rounded-3xl rounded-t-3xl max-h-[92vh] overflow-y-auto animate-popin shadow-soft">
+    <div class="sticky top-0 bg-cream/95 backdrop-blur flex items-center justify-between px-5 py-4 border-b border-clay2">
+      <h2 id="adminEditTitleText" class="font-display font-bold text-lg"></h2>
+      <button id="adminEditCloseBtn" class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-clay transition-colors">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
+    <form id="adminEditForm" class="px-5 py-5 space-y-4">
+      <div>
+        <label class="block text-xs font-bold text-inks mb-1.5" id="adminLblTitleField"></label>
+        <input id="adminEditTitleInput" type="text" required maxlength="70" class="w-full bg-white border border-clay2 rounded-xl py-2.5 px-3 text-sm" />
+      </div>
+      <div>
+        <label class="block text-xs font-bold text-inks mb-1.5" id="adminLblDetails"></label>
+        <textarea id="adminEditDetailsInput" rows="3" maxlength="240" class="w-full bg-white border border-clay2 rounded-xl py-2.5 px-3 text-sm resize-none"></textarea>
+      </div>
+      <div>
+        <label class="block text-xs font-bold text-inks mb-1.5" id="adminLblCategory"></label>
+        <select id="adminEditCategorySelect" class="w-full bg-white border border-clay2 rounded-xl py-2.5 px-3 text-sm"></select>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-bold text-inks mb-1.5" id="adminLblWilaya"></label>
+          <select id="adminEditWilayaSelect" class="w-full bg-white border border-clay2 rounded-xl py-2.5 px-3 text-sm"></select>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-inks mb-1.5" id="adminLblCommune"></label>
+          <select id="adminEditCommuneSelect" class="w-full bg-white border border-clay2 rounded-xl py-2.5 px-3 text-sm"></select>
+        </div>
+      </div>
+      <div>
+        <label class="block text-xs font-bold text-inks mb-1.5" id="adminLblPhone"></label>
+        <input id="adminEditPhoneInput" type="tel" required class="w-full bg-white border border-clay2 rounded-xl py-2.5 px-3 text-sm" />
+      </div>
+      <button type="submit" class="w-full bg-moss-500 hover:bg-moss-600 text-white font-bold py-3 rounded-xl shadow-soft transition-all active:scale-[.98]" id="adminSaveBtn"></button>
+    </form>
+  </div>
+</div>
+
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -252,6 +326,109 @@ const CATEGORIES = [
   {k:"other", icon:"megaphone"}
 ];
 
+// Official commune list (58 wilayas / 1541 communes), loaded at runtime from the
+// AbderrahmeneDZ/Wilaya-Of-Algeria open dataset (Algerian Interior Ministry sourced)
+// via jsDelivr's GitHub CDN mirror, instead of being hand-typed here.
+const COMMUNES_SOURCE_URL = "https://cdn.jsdelivr.net/gh/AbderrahmeneDZ/Wilaya-Of-Algeria@master/Commune_Of_Algeria.json";
+const DEFAULT_COMMUNE_MATCH = "ras el oued";
+
+function stripDiacritics(s) {
+  return (s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+}
+
+async function loadCommunesData() {
+  try {
+    const res = await fetch(COMMUNES_SOURCE_URL);
+    if (!res.ok) throw new Error("bad response");
+    const data = await res.json();
+    const byWilaya = {};
+    data.forEach(row => {
+      const code = String(row.wilaya_id);
+      if (!byWilaya[code]) byWilaya[code] = [];
+      byWilaya[code].push({ fr: row.name, ar: row.ar_name && row.ar_name.trim() ? row.ar_name : row.name });
+    });
+    Object.keys(byWilaya).forEach(code => {
+      byWilaya[code].sort((a, b) => a.fr.localeCompare(b.fr));
+    });
+    state.communesByWilaya = byWilaya;
+    state.communesLoaded = true;
+  } catch (e) {
+    state.communesLoaded = false;
+    console.warn("Nodz: could not load commune list, falling back to free text", e);
+    const fallbackInput = document.createElement("input");
+    fallbackInput.type = "text";
+    fallbackInput.id = "communeInput";
+    fallbackInput.required = true;
+    fallbackInput.className = "w-full bg-white border border-clay2 rounded-xl py-2.5 px-3 text-sm";
+    fallbackInput.placeholder = t("communePlaceholder");
+    fallbackInput.value = "Ras El Oued";
+    const current = document.getElementById("communeInput");
+    current.replaceWith(fallbackInput);
+  }
+  populateCommuneSelect(document.getElementById("communeFilter"), state.wilayaFilter, true, state.communeFilter);
+  syncFormCommuneSelect();
+}
+
+function populateCommuneSelect(selectEl, wilayaCode, includeAll, preserveValue) {
+  if (!selectEl) return;
+  selectEl.innerHTML = "";
+  if (includeAll) {
+    const optAll = document.createElement("option");
+    optAll.value = "all";
+    optAll.textContent = t("allCommunes");
+    selectEl.appendChild(optAll);
+  }
+  if (!state.communesLoaded) {
+    const opt = document.createElement("option");
+    opt.value = "";
+    opt.disabled = !includeAll;
+    opt.textContent = t("communeLoading");
+    selectEl.appendChild(opt);
+    return;
+  }
+  const list = (wilayaCode && wilayaCode !== "all") ? (state.communesByWilaya[String(wilayaCode)] || []) : [];
+  const source = includeAll && (!wilayaCode || wilayaCode === "all")
+    ? Object.values(state.communesByWilaya).flat()
+    : list;
+  const seen = new Set();
+  source.forEach(c => {
+    if (seen.has(c.fr)) return;
+    seen.add(c.fr);
+    const o = document.createElement("option");
+    o.value = c.fr;
+    o.textContent = state.lang === "ar" ? c.ar : c.fr;
+    selectEl.appendChild(o);
+  });
+  if (preserveValue && seen.has(preserveValue)) {
+    selectEl.value = preserveValue;
+  } else if (includeAll) {
+    selectEl.value = "all";
+  }
+}
+
+function syncFormCommuneSelect() {
+  const sel = document.getElementById("communeInput");
+  if (!sel || sel.tagName !== "SELECT") return;
+  const wilayaCode = document.getElementById("wilayaSelect").value;
+  const prevValue = sel.value;
+  populateCommuneSelect(sel, wilayaCode, false, prevValue);
+  if (!state.communesLoaded) return;
+  const list = state.communesByWilaya[String(wilayaCode)] || [];
+  const hasPrev = list.some(c => c.fr === prevValue);
+  if (!hasPrev) {
+    const defaultMatch = list.find(c => stripDiacritics(c.fr) === DEFAULT_COMMUNE_MATCH);
+    if (defaultMatch) sel.value = defaultMatch.fr;
+  }
+}
+
+function communeLabel(wilayaCode, canonicalName) {
+  if (!canonicalName) return "";
+  const list = state.communesByWilaya[String(wilayaCode)] || [];
+  const match = list.find(c => c.fr === canonicalName);
+  if (!match) return canonicalName;
+  return state.lang === "ar" ? match.ar : match.fr;
+}
+
 const I18N = {
   ar: {
     tagline: "احتياجات محلية، تواصل مباشر عبر الجزائر",
@@ -277,7 +454,7 @@ const I18N = {
     lblCategory: "التصنيف", categoryPlaceholder: "اختر تصنيفًا",
     lblTitleField: "العنوان", titlePlaceholder: "مثال: أبحث عن صيدلية مناوبة",
     lblDetails: "تفاصيل إضافية (اختياري)", detailsPlaceholder: "أضف تفاصيل تساعد الآخرين...",
-    lblWilaya: "الولاية", lblCommune: "البلدية", communePlaceholder: "مثال: رأس الوادي",
+    lblWilaya: "الولاية", lblCommune: "البلدية", communePlaceholder: "مثال: رأس الوادي", communeLoading: "جارٍ التحميل...",
     lblPhone: "رقم الهاتف", phoneError: "أدخل رقم جزائري صحيح (05/06/07 + 8 أرقام)",
     lblExpiration: "مدة الصلاحية",
     exp1h: "ساعة", exp3h: "3 ساعات", expToday: "اليوم", exp24h: "24 ساعة",
@@ -291,7 +468,29 @@ const I18N = {
     alreadyReported: "تم الإبلاغ مسبقًا من هذا الجهاز",
     autoHiddenNote: "تم إخفاء هذا المنشور بعد عدة بلاغات",
     frequentBadge: "ناشر محلي معروف",
-    rateLimitToast: "لقد نشرت عدة طلبات في وقت قصير، حاول لاحقًا"
+    rateLimitToast: "لقد نشرت عدة طلبات في وقت قصير، حاول لاحقًا",
+    pinnedLabel: "مثبّت",
+    adminTitle: "لوحة تحكم Nodz",
+    adminPasswordPrompt: "أدخل كلمة المرور للمتابعة",
+    adminPasswordPlaceholder: "كلمة المرور",
+    adminUnlock: "دخول",
+    adminWrongPassword: "كلمة مرور خاطئة",
+    adminLogout: "خروج",
+    adminExit: "العودة للموقع",
+    adminSearchPlaceholder: "بحث بالعنوان أو الهاتف...",
+    adminAllWilayas: "كل الولايات",
+    adminEdit: "تعديل",
+    adminDelete: "حذف",
+    adminPin: "تثبيت",
+    adminUnpin: "إلغاء التثبيت",
+    adminPinFor: "ثبّت لمدة",
+    adminPin1d: "يوم", adminPin3d: "3 أيام", adminPin7d: "7 أيام", adminPinForever: "للأبد",
+    adminNoPosts: "لا توجد منشورات",
+    adminEditTitle: "تعديل المنشور",
+    adminSave: "حفظ التغييرات",
+    adminDeleteConfirm: "هل أنت متأكد من الحذف؟",
+    adminDeleted: "تم الحذف", adminUpdated: "تم التحديث", adminPinned: "تم التثبيت", adminUnpinned: "تم إلغاء التثبيت",
+    adminFlags: "بلاغات", adminExpired: "منتهي", adminFulfilledLabel: "منجَز"
   },
   fr: {
     tagline: "Besoins locaux, connexions en temps réel à travers l'Algérie",
@@ -317,7 +516,7 @@ const I18N = {
     lblCategory: "Catégorie", categoryPlaceholder: "Choisir une catégorie",
     lblTitleField: "Titre", titlePlaceholder: "Ex : je cherche une pharmacie de garde",
     lblDetails: "Détails supplémentaires (facultatif)", detailsPlaceholder: "Ajoutez des détails utiles...",
-    lblWilaya: "Wilaya", lblCommune: "Commune", communePlaceholder: "Ex : Ras El Oued",
+    lblWilaya: "Wilaya", lblCommune: "Commune", communePlaceholder: "Ex : Ras El Oued", communeLoading: "Chargement...",
     lblPhone: "Numéro de téléphone", phoneError: "Entrez un numéro algérien valide (05/06/07 + 8 chiffres)",
     lblExpiration: "Durée de validité",
     exp1h: "1 heure", exp3h: "3 heures", expToday: "Aujourd'hui", exp24h: "24 heures",
@@ -331,7 +530,29 @@ const I18N = {
     alreadyReported: "Déjà signalé depuis cet appareil",
     autoHiddenNote: "Publication masquée après plusieurs signalements",
     frequentBadge: "Habitué du quartier",
-    rateLimitToast: "Vous avez publié plusieurs annonces d'affilée, réessayez plus tard"
+    rateLimitToast: "Vous avez publié plusieurs annonces d'affilée, réessayez plus tard",
+    pinnedLabel: "Épinglé",
+    adminTitle: "Tableau de bord Nodz",
+    adminPasswordPrompt: "Entrez le mot de passe pour continuer",
+    adminPasswordPlaceholder: "Mot de passe",
+    adminUnlock: "Entrer",
+    adminWrongPassword: "Mot de passe incorrect",
+    adminLogout: "Déconnexion",
+    adminExit: "Retour au site",
+    adminSearchPlaceholder: "Rechercher par titre ou téléphone...",
+    adminAllWilayas: "Toutes les wilayas",
+    adminEdit: "Modifier",
+    adminDelete: "Supprimer",
+    adminPin: "Épingler",
+    adminUnpin: "Désépingler",
+    adminPinFor: "Épingler pour",
+    adminPin1d: "1 jour", adminPin3d: "3 jours", adminPin7d: "7 jours", adminPinForever: "Toujours",
+    adminNoPosts: "Aucune publication",
+    adminEditTitle: "Modifier la publication",
+    adminSave: "Enregistrer",
+    adminDeleteConfirm: "Confirmer la suppression ?",
+    adminDeleted: "Supprimé", adminUpdated: "Mis à jour", adminPinned: "Épinglé", adminUnpinned: "Désépinglé",
+    adminFlags: "Signalements", adminExpired: "Expiré", adminFulfilledLabel: "Résolu"
   },
   en: {
     tagline: "Local Needs, Real-Time Connections across Algeria",
@@ -357,7 +578,7 @@ const I18N = {
     lblCategory: "Category", categoryPlaceholder: "Choose a category",
     lblTitleField: "Title", titlePlaceholder: "e.g. Looking for an open pharmacy",
     lblDetails: "Additional details (optional)", detailsPlaceholder: "Add details that help others...",
-    lblWilaya: "Wilaya", lblCommune: "Commune", communePlaceholder: "e.g. Ras El Oued",
+    lblWilaya: "Wilaya", lblCommune: "Commune", communePlaceholder: "e.g. Ras El Oued", communeLoading: "Loading...",
     lblPhone: "Phone number", phoneError: "Enter a valid Algerian number (05/06/07 + 8 digits)",
     lblExpiration: "Expiration",
     exp1h: "1 hour", exp3h: "3 hours", expToday: "Today", exp24h: "24 hours",
@@ -371,7 +592,29 @@ const I18N = {
     alreadyReported: "Already reported from this device",
     autoHiddenNote: "Post hidden after multiple reports",
     frequentBadge: "Frequent local poster",
-    rateLimitToast: "You've posted several times in a row, try again shortly"
+    rateLimitToast: "You've posted several times in a row, try again shortly",
+    pinnedLabel: "Pinned",
+    adminTitle: "Nodz Admin Dashboard",
+    adminPasswordPrompt: "Enter the password to continue",
+    adminPasswordPlaceholder: "Password",
+    adminUnlock: "Enter",
+    adminWrongPassword: "Wrong password",
+    adminLogout: "Log out",
+    adminExit: "Back to site",
+    adminSearchPlaceholder: "Search by title or phone...",
+    adminAllWilayas: "All wilayas",
+    adminEdit: "Edit",
+    adminDelete: "Delete",
+    adminPin: "Pin",
+    adminUnpin: "Unpin",
+    adminPinFor: "Pin for",
+    adminPin1d: "1 day", adminPin3d: "3 days", adminPin7d: "7 days", adminPinForever: "Forever",
+    adminNoPosts: "No posts",
+    adminEditTitle: "Edit post",
+    adminSave: "Save changes",
+    adminDeleteConfirm: "Are you sure you want to delete this?",
+    adminDeleted: "Deleted", adminUpdated: "Updated", adminPinned: "Pinned", adminUnpinned: "Unpinned",
+    adminFlags: "Flags", adminExpired: "Expired", adminFulfilledLabel: "Fulfilled"
   }
 };
 
@@ -387,13 +630,15 @@ const state = {
   formMode: "request",
   expChoice: "3h",
   activeWilayaRef: null,
-  firstLoadDone: false
+  firstLoadDone: false,
+  communesByWilaya: {},
+  communesLoaded: false
 };
 
-const FLAG_THRESHOLD = 3;
+const FLAG_THRESHOLD = 10;
 const FREQUENT_THRESHOLD = 5;
-const RATE_LIMIT_MAX = 5;
-const RATE_LIMIT_WINDOW_MS = 5 * 60 * 1000;
+const RATE_LIMIT_MAX = 1;
+const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
 
 function myFlaggedIds() {
   try { return JSON.parse(localStorage.getItem("nodz_flagged") || "[]"); } catch(e) { return []; }
@@ -521,8 +766,9 @@ function applyLangToDom() {
   document.getElementById("lblExpiration").textContent = t("lblExpiration");
   document.getElementById("titleInput").placeholder = t("titlePlaceholder");
   document.getElementById("detailsInput").placeholder = t("detailsPlaceholder");
-  document.getElementById("communeInput").placeholder = t("communePlaceholder");
   document.getElementById("phoneError").textContent = t("phoneError");
+  const communeEl = document.getElementById("communeInput");
+  if (communeEl && communeEl.tagName === "INPUT") communeEl.placeholder = t("communePlaceholder");
   document.getElementById("submitBtnText").textContent = t("submitBtn");
 
   document.querySelectorAll(".lang-btn").forEach(b => {
@@ -534,11 +780,13 @@ function applyLangToDom() {
 
   buildWilayaOptions();
   buildCommuneFilterOptions();
+  syncFormCommuneSelect();
   buildCategoryChips();
   buildCategorySelect();
   buildExpChips();
   buildFormModeButtons();
   updateModalTitle();
+  applyAdminI18n();
   renderFeed();
 }
 
@@ -567,26 +815,8 @@ function buildWilayaOptions() {
 }
 
 function buildCommuneFilterOptions() {
-  const sel = document.getElementById("communeFilter");
-  const prev = state.communeFilter;
-  const communes = new Set();
-  Object.values(state.posts).forEach(p => {
-    if (p.commune) communes.add(p.commune);
-  });
-  const sorted = Array.from(communes).sort((a, b) => a.localeCompare(b, state.lang));
-  sel.innerHTML = "";
-  const optAll = document.createElement("option");
-  optAll.value = "all";
-  optAll.textContent = t("allCommunes");
-  sel.appendChild(optAll);
-  sorted.forEach(name => {
-    const o = document.createElement("option");
-    o.value = name;
-    o.textContent = name;
-    sel.appendChild(o);
-  });
-  state.communeFilter = sorted.includes(prev) ? prev : "all";
-  sel.value = state.communeFilter;
+  populateCommuneSelect(document.getElementById("communeFilter"), state.wilayaFilter, true, state.communeFilter);
+  state.communeFilter = document.getElementById("communeFilter").value;
 }
 
 function buildCategoryChips() {
@@ -709,12 +939,17 @@ document.getElementById("categoryChips").addEventListener("click", e => {
 document.getElementById("wilayaFilter").addEventListener("change", e => {
   state.wilayaFilter = e.target.value;
   state.communeFilter = "all";
+  populateCommuneSelect(document.getElementById("communeFilter"), state.wilayaFilter, true, "all");
   attachFirebaseListener();
 });
 
 document.getElementById("communeFilter").addEventListener("change", e => {
   state.communeFilter = e.target.value;
   renderFeed();
+});
+
+document.getElementById("wilayaSelect").addEventListener("change", () => {
+  syncFormCommuneSelect();
 });
 
 document.getElementById("searchInput").addEventListener("input", e => {
@@ -779,7 +1014,10 @@ document.getElementById("postForm").addEventListener("submit", e => {
   errEl.classList.add("hidden");
 
   if (isRateLimited()) {
-    showToast(t("rateLimitToast"), "warn");
+    const recent = myRecentPostTimes().filter(ts => Date.now() - ts < RATE_LIMIT_WINDOW_MS);
+    const oldest = Math.min(...recent);
+    const remainingMin = Math.max(1, Math.ceil((RATE_LIMIT_WINDOW_MS - (Date.now() - oldest)) / 60000));
+    showToast(`${t("rateLimitToast")} (${remainingMin} ${state.lang === "ar" ? "د" : "min"})`, "warn");
     return;
   }
 
@@ -861,7 +1099,6 @@ function attachFirebaseListener() {
       });
     }
     state.posts = flat;
-    buildCommuneFilterOptions();
     renderFeed();
     state.firstLoadDone = true;
   });
@@ -892,7 +1129,12 @@ function renderFeed() {
     return true;
   });
 
-  list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+  list.sort((a, b) => {
+    const aPinned = a.pinned && (!a.pinnedUntil || a.pinnedUntil > now);
+    const bPinned = b.pinned && (!b.pinnedUntil || b.pinnedUntil > now);
+    if (aPinned !== bPinned) return aPinned ? -1 : 1;
+    return (b.createdAt || 0) - (a.createdAt || 0);
+  });
 
   grid.innerHTML = "";
 
@@ -924,8 +1166,13 @@ function renderCard(post) {
   const badgeColor = post.mode === "request" ? "bg-urgent-50 text-urgent-600" : "bg-moss-50 text-moss-700";
   const flagged = hasFlagged(post._id);
   const isFrequent = (state.phoneStats[phoneKey(post.phone)]?.count || 0) >= FREQUENT_THRESHOLD;
+  const isPinned = post.pinned && (!post.pinnedUntil || post.pinnedUntil > Date.now());
+  const communeDisplay = communeLabel(post._wilayaCode, post.commune);
 
   card.innerHTML = `
+    ${isPinned ? `<div class="flex items-center gap-1 text-[10px] font-bold text-urgent-600 bg-urgent-50 self-start px-2 py-1 rounded-full -mb-1">
+      <i data-lucide="pin" class="w-3 h-3"></i>${t("pinnedLabel")}
+    </div>` : ""}
     <div class="flex items-start justify-between gap-2">
       <div class="flex items-center gap-2">
         <div class="w-9 h-9 rounded-full ${badgeColor} flex items-center justify-center shrink-0">
@@ -933,7 +1180,7 @@ function renderCard(post) {
         </div>
         <div>
           <p class="text-[11px] font-bold ${post.mode === "request" ? "text-urgent-600" : "text-moss-700"}">${t("cat_" + cat.k)}</p>
-          <p class="text-[11px] text-inkfaint">${wilayaName(post._wilayaCode)} · ${post.commune || ""}</p>
+          <p class="text-[11px] text-inkfaint">${wilayaName(post._wilayaCode)} · ${communeDisplay}</p>
         </div>
       </div>
       <div class="flex items-center gap-1.5 shrink-0">
@@ -953,6 +1200,7 @@ function renderCard(post) {
     <div class="flex items-center justify-between text-[11px] text-inkfaint">
       <span class="flex items-center gap-1"><i data-lucide="clock" class="w-3 h-3"></i>${left ? `${t("expiresIn")} ${left}` : t("expired")}</span>
     </div>
+    ${mine ? "" : `
     <div class="flex gap-2 mt-1">
       <a href="${telLink}" class="flex-1 flex items-center justify-center gap-1.5 bg-ink text-white text-xs font-bold py-2.5 rounded-xl hover:opacity-90 transition-opacity">
         <i data-lucide="phone" class="w-3.5 h-3.5"></i>${t("callNow")}
@@ -960,7 +1208,7 @@ function renderCard(post) {
       <a href="${waLink}" target="_blank" rel="noopener" class="flex-1 flex items-center justify-center gap-1.5 bg-moss-500 text-white text-xs font-bold py-2.5 rounded-xl hover:bg-moss-600 transition-colors">
         <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>${t("whatsapp")}
       </a>
-    </div>
+    </div>`}
     ${mine ? `
     <div class="flex gap-2 pt-2 border-t border-clay2">
       <button data-action="fulfill" data-id="${post._id}" data-wc="${post._wilayaCode}" class="flex-1 text-[11px] font-bold text-moss-700 bg-moss-50 py-2 rounded-lg hover:bg-moss-100 transition-colors">${t("markFulfilled")}</button>
@@ -1101,12 +1349,326 @@ function attachPhoneStatsListener() {
   });
 }
 
+// ---------- Admin dashboard ----------
+// NOTE: this is a lightweight, client-side gate suited to Nodz's zero-account
+// design — it is NOT a substitute for real access control. Since the Firebase
+// rules in this project are open (matching the rest of the app), anyone who
+// found this password could write directly to the database with it. For
+// real protection, pair this with Firebase Auth + server-side security rules
+// restricting writes to an authenticated admin UID.
+const ADMIN_PASSWORD_HASH = "9de1424a7b8037606a10b0842216e420b60a21e424b80e294f1c5d00d85aa930"; // default password: NodzAdmin2026!
+const ADMIN_ROUTE_HASH = "#nodz-admin";
+
+async function sha256Hex(str) {
+  const enc = new TextEncoder().encode(str);
+  const buf = await crypto.subtle.digest("SHA-256", enc);
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
+}
+
+const adminState = {
+  posts: {},
+  listenerAttached: false,
+  editingId: null,
+  editingWilaya: null,
+  search: "",
+  wilayaFilter: "all"
+};
+
+function initAdminRoute() {
+  if (location.hash === ADMIN_ROUTE_HASH) openAdminOverlay();
+  window.addEventListener("hashchange", () => {
+    if (location.hash === ADMIN_ROUTE_HASH) openAdminOverlay();
+    else document.getElementById("adminOverlay").classList.add("hidden");
+  });
+}
+
+function openAdminOverlay() {
+  document.getElementById("adminOverlay").classList.remove("hidden");
+  applyAdminI18n();
+  if (sessionStorage.getItem("nodz_admin_ok") === "1") {
+    showAdminDashboard();
+  } else {
+    document.getElementById("adminGateView").classList.remove("hidden");
+    document.getElementById("adminDashboardView").classList.add("hidden");
+    document.getElementById("adminPasswordInput").value = "";
+    document.getElementById("adminGateError").classList.add("hidden");
+  }
+  if (window.lucide) lucide.createIcons();
+}
+
+function closeAdminOverlay() {
+  history.replaceState(null, "", location.pathname + location.search);
+  document.getElementById("adminOverlay").classList.add("hidden");
+}
+
+async function attemptAdminLogin() {
+  const val = document.getElementById("adminPasswordInput").value;
+  const hash = await sha256Hex(val);
+  if (hash === ADMIN_PASSWORD_HASH) {
+    sessionStorage.setItem("nodz_admin_ok", "1");
+    showAdminDashboard();
+  } else {
+    document.getElementById("adminGateError").textContent = t("adminWrongPassword");
+    document.getElementById("adminGateError").classList.remove("hidden");
+  }
+}
+
+function showAdminDashboard() {
+  document.getElementById("adminGateView").classList.add("hidden");
+  document.getElementById("adminDashboardView").classList.remove("hidden");
+  buildAdminWilayaFilter();
+  attachAdminListener();
+  if (window.lucide) lucide.createIcons();
+}
+
+function adminLogout() {
+  sessionStorage.removeItem("nodz_admin_ok");
+  closeAdminOverlay();
+}
+
+function buildAdminWilayaFilter() {
+  const sel = document.getElementById("adminWilayaFilter");
+  const prev = sel.value || "all";
+  sel.innerHTML = "";
+  const optAll = document.createElement("option");
+  optAll.value = "all";
+  optAll.textContent = t("adminAllWilayas");
+  sel.appendChild(optAll);
+  WILAYAS.forEach(w => {
+    const o = document.createElement("option");
+    o.value = w.c;
+    o.textContent = `${w.c} — ${state.lang === "ar" ? w.ar : w.fr}`;
+    sel.appendChild(o);
+  });
+  sel.value = prev;
+}
+
+function attachAdminListener() {
+  if (adminState.listenerAttached) { renderAdminList(); return; }
+  adminState.listenerAttached = true;
+  onValue(ref(db, "posts"), snapshot => {
+    const val = snapshot.val() || {};
+    const flat = {};
+    Object.keys(val).forEach(wCode => {
+      const posts = val[wCode] || {};
+      Object.keys(posts).forEach(pid => {
+        flat[pid] = { ...posts[pid], _id: pid, _wilayaCode: Number(wCode) };
+      });
+    });
+    adminState.posts = flat;
+    renderAdminList();
+  });
+}
+
+function renderAdminList() {
+  const wrap = document.getElementById("adminList");
+  if (!wrap || document.getElementById("adminOverlay").classList.contains("hidden")) return;
+  const now = Date.now();
+  let list = Object.values(adminState.posts);
+  if (adminState.wilayaFilter !== "all") list = list.filter(p => p._wilayaCode === Number(adminState.wilayaFilter));
+  if (adminState.search) {
+    const q = adminState.search.toLowerCase();
+    list = list.filter(p => `${p.title || ""} ${p.phone || ""}`.toLowerCase().includes(q));
+  }
+  list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+
+  wrap.innerHTML = "";
+  if (list.length === 0) {
+    wrap.innerHTML = `<p class="text-sm text-inkfaint text-center py-10">${t("adminNoPosts")}</p>`;
+    return;
+  }
+
+  list.forEach(post => {
+    const cat = CATEGORIES.find(c => c.k === post.category) || CATEGORIES[5];
+    const isPinned = post.pinned && (!post.pinnedUntil || post.pinnedUntil > now);
+    const isExpired = post.expiresAt && post.expiresAt < now;
+    const row = document.createElement("div");
+    row.className = "bg-white border border-clay2 rounded-2xl p-3.5 flex flex-col sm:flex-row sm:items-center gap-3";
+    row.innerHTML = `
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${post.mode === "request" ? "bg-urgent-50 text-urgent-600" : "bg-moss-50 text-moss-700"}">${t("cat_" + cat.k)}</span>
+          ${isPinned ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-spore-50 text-spore-600 flex items-center gap-1"><i data-lucide="pin" class="w-2.5 h-2.5"></i>${t("pinnedLabel")}</span>` : ""}
+          ${post.fulfilled ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-clay text-inks">${t("adminFulfilledLabel")}</span>` : ""}
+          ${isExpired ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-clay text-inks">${t("adminExpired")}</span>` : ""}
+          ${(post.flags || 0) > 0 ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-urgent-50 text-urgent-600">${t("adminFlags")}: ${post.flags}</span>` : ""}
+        </div>
+        <p class="font-bold text-sm mt-1 truncate">${escapeHtml(post.title || "")}</p>
+        <p class="text-xs text-inkfaint mt-0.5">${wilayaName(post._wilayaCode)} · ${communeLabel(post._wilayaCode, post.commune)} · ${post.phone || ""}</p>
+      </div>
+      <div class="flex items-center gap-1.5 flex-wrap shrink-0">
+        <select data-action="adminPin" data-id="${post._id}" data-wc="${post._wilayaCode}" class="text-[11px] font-bold border border-clay2 rounded-lg py-1.5 px-2 bg-cream">
+          <option value="">${isPinned ? t("adminUnpin") : t("adminPinFor")}</option>
+          ${!isPinned ? `
+          <option value="1d">${t("adminPin1d")}</option>
+          <option value="3d">${t("adminPin3d")}</option>
+          <option value="7d">${t("adminPin7d")}</option>
+          <option value="forever">${t("adminPinForever")}</option>` : `<option value="unpin">${t("adminUnpin")}</option>`}
+        </select>
+        <button data-action="adminEdit" data-id="${post._id}" data-wc="${post._wilayaCode}" class="text-[11px] font-bold bg-moss-50 text-moss-700 px-2.5 py-1.5 rounded-lg hover:bg-moss-100 transition-colors">${t("adminEdit")}</button>
+        <button data-action="adminDelete" data-id="${post._id}" data-wc="${post._wilayaCode}" class="text-[11px] font-bold bg-urgent-50 text-urgent-600 px-2.5 py-1.5 rounded-lg hover:bg-urgent-100 transition-colors">${t("adminDelete")}</button>
+      </div>
+    `;
+    wrap.appendChild(row);
+  });
+  if (window.lucide) lucide.createIcons();
+}
+
+function pinUntilFor(choice) {
+  const now = Date.now();
+  switch (choice) {
+    case "1d": return now + 24 * 3600e3;
+    case "3d": return now + 3 * 24 * 3600e3;
+    case "7d": return now + 7 * 24 * 3600e3;
+    case "forever": return null;
+    default: return null;
+  }
+}
+
+document.getElementById("adminList").addEventListener("click", e => {
+  const btn = e.target.closest("button[data-action]");
+  if (!btn) return;
+  const id = btn.dataset.id, wc = btn.dataset.wc;
+  const postRef = ref(db, `posts/${wc}/${id}`);
+  if (btn.dataset.action === "adminDelete") {
+    if (!confirm(t("adminDeleteConfirm"))) return;
+    remove(postRef).then(() => showToast(t("adminDeleted"), "info"));
+  } else if (btn.dataset.action === "adminEdit") {
+    openAdminEdit(adminState.posts[id]);
+  }
+});
+
+document.getElementById("adminList").addEventListener("change", e => {
+  const sel = e.target.closest("select[data-action='adminPin']");
+  if (!sel) return;
+  const id = sel.dataset.id, wc = sel.dataset.wc;
+  const postRef = ref(db, `posts/${wc}/${id}`);
+  const choice = sel.value;
+  if (!choice) return;
+  if (choice === "unpin") {
+    update(postRef, { pinned: false, pinnedUntil: null }).then(() => showToast(t("adminUnpinned"), "info"));
+  } else {
+    update(postRef, { pinned: true, pinnedUntil: pinUntilFor(choice) }).then(() => showToast(t("adminPinned"), "success"));
+  }
+});
+
+document.getElementById("adminSearchInput").addEventListener("input", e => {
+  adminState.search = e.target.value.trim();
+  renderAdminList();
+});
+document.getElementById("adminWilayaFilter").addEventListener("change", e => {
+  adminState.wilayaFilter = e.target.value;
+  renderAdminList();
+});
+
+document.getElementById("adminUnlockBtn").addEventListener("click", attemptAdminLogin);
+document.getElementById("adminPasswordInput").addEventListener("keydown", e => {
+  if (e.key === "Enter") attemptAdminLogin();
+});
+document.getElementById("adminExitBtn1").addEventListener("click", closeAdminOverlay);
+document.getElementById("adminExitBtn2").addEventListener("click", closeAdminOverlay);
+document.getElementById("adminLogoutBtn").addEventListener("click", adminLogout);
+
+function buildAdminEditSelects() {
+  const catSel = document.getElementById("adminEditCategorySelect");
+  catSel.innerHTML = "";
+  CATEGORIES.forEach(c => {
+    const o = document.createElement("option");
+    o.value = c.k;
+    o.textContent = t("cat_" + c.k);
+    catSel.appendChild(o);
+  });
+  const wSel = document.getElementById("adminEditWilayaSelect");
+  wSel.innerHTML = "";
+  WILAYAS.forEach(w => {
+    const o = document.createElement("option");
+    o.value = w.c;
+    o.textContent = `${w.c} — ${state.lang === "ar" ? w.ar : w.fr}`;
+    wSel.appendChild(o);
+  });
+}
+
+function openAdminEdit(post) {
+  if (!post) return;
+  adminState.editingId = post._id;
+  adminState.editingWilaya = post._wilayaCode;
+  buildAdminEditSelects();
+  document.getElementById("adminEditTitleInput").value = post.title || "";
+  document.getElementById("adminEditDetailsInput").value = post.details || "";
+  document.getElementById("adminEditCategorySelect").value = post.category || "other";
+  document.getElementById("adminEditWilayaSelect").value = post._wilayaCode;
+  populateCommuneSelect(document.getElementById("adminEditCommuneSelect"), post._wilayaCode, false, post.commune);
+  document.getElementById("adminEditPhoneInput").value = post.phone || "";
+  document.getElementById("adminEditOverlay").classList.remove("hidden");
+  if (window.lucide) lucide.createIcons();
+}
+document.getElementById("adminEditWilayaSelect").addEventListener("change", e => {
+  populateCommuneSelect(document.getElementById("adminEditCommuneSelect"), e.target.value, false, null);
+});
+document.getElementById("adminEditCloseBtn").addEventListener("click", () => {
+  document.getElementById("adminEditOverlay").classList.add("hidden");
+});
+
+document.getElementById("adminEditForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const newWilaya = document.getElementById("adminEditWilayaSelect").value;
+  const updated = {
+    title: document.getElementById("adminEditTitleInput").value.trim(),
+    details: document.getElementById("adminEditDetailsInput").value.trim(),
+    category: document.getElementById("adminEditCategorySelect").value,
+    commune: document.getElementById("adminEditCommuneSelect").value,
+    phone: normalizePhone(document.getElementById("adminEditPhoneInput").value.trim())
+  };
+  const oldWilaya = adminState.editingWilaya;
+  const id = adminState.editingId;
+
+  const finish = () => {
+    document.getElementById("adminEditOverlay").classList.add("hidden");
+    showToast(t("adminUpdated"), "success");
+  };
+
+  if (String(newWilaya) !== String(oldWilaya)) {
+    const original = adminState.posts[id];
+    const merged = { ...original, ...updated };
+    delete merged._id; delete merged._wilayaCode;
+    remove(ref(db, `posts/${oldWilaya}/${id}`)).then(() => {
+      push(ref(db, `posts/${newWilaya}`), merged).then(finish);
+    });
+  } else {
+    update(ref(db, `posts/${oldWilaya}/${id}`), updated).then(finish);
+  }
+});
+
+function applyAdminI18n() {
+  document.getElementById("adminGateTitle").textContent = t("adminTitle");
+  document.getElementById("adminGateSub").textContent = t("adminPasswordPrompt");
+  document.getElementById("adminPasswordInput").placeholder = t("adminPasswordPlaceholder");
+  document.getElementById("adminUnlockBtn").textContent = t("adminUnlock");
+  document.getElementById("adminExitBtn1").textContent = t("adminExit");
+  document.getElementById("adminDashTitle").textContent = t("adminTitle");
+  document.getElementById("adminExitBtn2").textContent = t("adminExit");
+  document.getElementById("adminLogoutBtn").textContent = t("adminLogout");
+  document.getElementById("adminSearchInput").placeholder = t("adminSearchPlaceholder");
+  document.getElementById("adminEditTitleText").textContent = t("adminEditTitle");
+  document.getElementById("adminLblTitleField").textContent = t("lblTitleField");
+  document.getElementById("adminLblDetails").textContent = t("lblDetails");
+  document.getElementById("adminLblCategory").textContent = t("lblCategory");
+  document.getElementById("adminLblWilaya").textContent = t("lblWilaya");
+  document.getElementById("adminLblCommune").textContent = t("lblCommune");
+  document.getElementById("adminLblPhone").textContent = t("lblPhone");
+  document.getElementById("adminSaveBtn").textContent = t("adminSave");
+  buildAdminWilayaFilter();
+  if (!document.getElementById("adminOverlay").classList.contains("hidden")) renderAdminList();
+}
+
 setupLogoCanvas();
 setupHeroCanvas();
 attachPhoneStatsListener();
 attachFirebaseListener();
 refreshModeStyles();
 applyLangToDom();
+loadCommunesData();
+initAdminRoute();
 if (window.lucide) lucide.createIcons();
 </script>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
