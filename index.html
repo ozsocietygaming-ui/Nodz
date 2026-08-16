@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Nodz — Local Needs, Real-Time Connections</title>
 <meta name="description" content="Nodz — طلبات وخدمات مباشرة عبر الجزائر">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='30' cy='30' r='12' fill='%231F8A5F'/%3E%3Ccircle cx='75' cy='40' r='9' fill='%232D7D9A'/%3E%3Ccircle cx='45' cy='75' r='10' fill='%23E8935A'/%3E%3Cline x1='30' y1='30' x2='75' y2='40' stroke='%231F8A5F' stroke-width='4'/%3E%3Cline x1='30' y1='30' x2='45' y2='75' stroke='%231F8A5F' stroke-width='4'/%3E%3C/svg%3E">
@@ -49,7 +49,9 @@ tailwind.config = {
 }
 </script>
 <style>
-  html, body { background: #FBF8F3; }
+  html, body { background: #FBF8F3; max-width: 100%; overflow-x: hidden; }
+  * { min-width: 0; }
+  img, canvas, svg, video, table { max-width: 100%; }
   body.lang-ar, body.lang-ar * { font-family: 'Tajawal', sans-serif; }
   body.lang-fr, body.lang-en { font-family: 'Inter', sans-serif; }
   body.lang-fr .font-display, body.lang-en .font-display { font-family: 'Plus Jakarta Sans', sans-serif; }
@@ -72,24 +74,30 @@ tailwind.config = {
 <body class="lang-ar bg-cream text-ink font-arabic min-h-screen flex flex-col">
 
 <header class="sticky top-0 z-40 bg-cream/90 backdrop-blur border-b border-clay2">
-  <div class="max-w-6xl mx-auto px-4 sm:px-6">
-    <div class="flex items-center justify-between h-16 gap-3">
-      <div class="flex items-center gap-2 shrink-0">
-        <canvas id="logoCanvas" width="36" height="36" class="rounded-full" aria-hidden="true"></canvas>
-        <span class="font-display font-extrabold text-xl tracking-tight text-moss-700">Nodz</span>
+  <div class="max-w-6xl mx-auto px-3 sm:px-6">
+    <div class="flex items-center justify-between h-16 gap-1.5 sm:gap-3">
+      <div class="flex items-center gap-1.5 sm:gap-2 shrink-0 min-w-0">
+        <canvas id="logoCanvas" width="36" height="36" class="rounded-full shrink-0" aria-hidden="true"></canvas>
+        <span class="font-display font-extrabold text-lg sm:text-xl tracking-tight text-moss-700 whitespace-nowrap">Nodz</span>
       </div>
-      <div class="hidden md:block flex-1 text-center">
-        <p id="taglineText" class="text-sm text-inks font-medium"></p>
+      <div class="hidden md:block flex-1 text-center min-w-0">
+        <p id="taglineText" class="text-sm text-inks font-medium truncate"></p>
       </div>
-      <div class="flex items-center gap-2">
-        <div class="flex items-center bg-clay rounded-full p-1 text-xs font-semibold">
-          <button data-lang="ar" class="lang-btn px-2.5 py-1.5 rounded-full transition-all">العربية</button>
-          <button data-lang="fr" class="lang-btn px-2.5 py-1.5 rounded-full transition-all">Français</button>
-          <button data-lang="en" class="lang-btn px-2.5 py-1.5 rounded-full transition-all">English</button>
+      <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+        <div class="flex items-center bg-clay rounded-full p-1 text-xs font-semibold shrink-0">
+          <button data-lang="ar" class="lang-btn px-2 py-1.5 sm:px-2.5 rounded-full transition-all whitespace-nowrap">
+            <span class="max-[420px]:hidden">العربية</span><span class="hidden max-[420px]:inline">AR</span>
+          </button>
+          <button data-lang="fr" class="lang-btn px-2 py-1.5 sm:px-2.5 rounded-full transition-all whitespace-nowrap">
+            <span class="max-[420px]:hidden">Français</span><span class="hidden max-[420px]:inline">FR</span>
+          </button>
+          <button data-lang="en" class="lang-btn px-2 py-1.5 sm:px-2.5 rounded-full transition-all whitespace-nowrap">
+            <span class="max-[420px]:hidden">English</span><span class="hidden max-[420px]:inline">EN</span>
+          </button>
         </div>
-        <button id="openPostModalBtn" class="bg-moss-500 hover:bg-moss-600 text-white text-sm font-bold px-4 py-2.5 rounded-full shadow-soft transition-all active:scale-95 flex items-center gap-1.5">
-          <i data-lucide="plus" class="w-4 h-4"></i>
-          <span id="navPostBtnText"></span>
+        <button id="openPostModalBtn" class="bg-moss-500 hover:bg-moss-600 text-white text-sm font-bold px-3 py-2.5 sm:px-4 rounded-full shadow-soft transition-all active:scale-95 flex items-center gap-1.5 shrink-0 min-h-[44px]">
+          <i data-lucide="plus" class="w-4 h-4 shrink-0"></i>
+          <span id="navPostBtnText" class="max-[380px]:hidden whitespace-nowrap"></span>
         </button>
       </div>
     </div>
@@ -102,13 +110,13 @@ tailwind.config = {
     <h1 id="heroTagline" class="font-display font-extrabold text-2xl sm:text-4xl text-ink max-w-2xl leading-tight"></h1>
     <p id="heroSub" class="mt-2 text-inks text-sm sm:text-base max-w-xl"></p>
 
-    <div class="mt-6 inline-flex bg-white rounded-2xl shadow-softer p-1.5 border border-clay2">
-      <button data-mode="request" class="mode-btn flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm transition-all">
-        <span class="w-2 h-2 rounded-full bg-urgent-500 animate-pulseGlow"></span>
+    <div class="mt-6 flex w-full sm:w-auto sm:inline-flex bg-white rounded-2xl shadow-softer p-1.5 border border-clay2">
+      <button data-mode="request" class="mode-btn flex-1 sm:flex-none flex items-center justify-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all min-h-[44px]">
+        <span class="w-2 h-2 rounded-full bg-urgent-500 animate-pulseGlow shrink-0"></span>
         <span id="modeRequestText"></span>
       </button>
-      <button data-mode="service" class="mode-btn flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm transition-all">
-        <span class="w-2 h-2 rounded-full bg-moss-500"></span>
+      <button data-mode="service" class="mode-btn flex-1 sm:flex-none flex items-center justify-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all min-h-[44px]">
+        <span class="w-2 h-2 rounded-full bg-moss-500 shrink-0"></span>
         <span id="modeServiceText"></span>
       </button>
     </div>
@@ -117,12 +125,12 @@ tailwind.config = {
 
 <section class="max-w-6xl mx-auto w-full px-4 sm:px-6 mt-5">
   <div class="flex flex-col sm:flex-row gap-3">
-    <div class="relative flex-1">
+    <div class="relative flex-1 min-w-0">
       <i data-lucide="search" class="w-4 h-4 absolute top-1/2 -translate-y-1/2 start-3.5 text-inkfaint"></i>
-      <input id="searchInput" type="text" class="w-full bg-white border border-clay2 rounded-xl py-2.5 ps-10 pe-3 text-sm placeholder:text-inkfaint focus:border-moss-400" />
+      <input id="searchInput" type="text" class="w-full bg-white border border-clay2 rounded-xl py-3 sm:py-2.5 ps-10 pe-3 text-sm placeholder:text-inkfaint focus:border-moss-400" />
     </div>
-    <select id="wilayaFilter" class="bg-white border border-clay2 rounded-xl py-2.5 px-3 text-sm font-medium min-w-[9rem]"></select>
-    <select id="communeFilter" class="bg-white border border-clay2 rounded-xl py-2.5 px-3 text-sm font-medium min-w-[9rem]"></select>
+    <select id="wilayaFilter" class="w-full sm:w-auto bg-white border border-clay2 rounded-xl py-3 sm:py-2.5 px-3 text-sm font-medium sm:min-w-[9rem]"></select>
+    <select id="communeFilter" class="w-full sm:w-auto bg-white border border-clay2 rounded-xl py-3 sm:py-2.5 px-3 text-sm font-medium sm:min-w-[9rem]"></select>
   </div>
   <div id="categoryChips" class="mt-3 flex gap-2 overflow-x-auto no-scrollbar pb-1"></div>
 </section>
@@ -154,8 +162,8 @@ tailwind.config = {
       <div>
         <label id="lblMode" class="block text-xs font-bold text-inks mb-1.5"></label>
         <div class="flex gap-2">
-          <button type="button" data-formmode="request" class="formmode-btn flex-1 py-2.5 rounded-xl border-2 text-sm font-bold transition-all"></button>
-          <button type="button" data-formmode="service" class="formmode-btn flex-1 py-2.5 rounded-xl border-2 text-sm font-bold transition-all"></button>
+          <button type="button" data-formmode="request" class="formmode-btn flex-1 py-3 min-h-[44px] rounded-xl border-2 text-sm font-bold transition-all"></button>
+          <button type="button" data-formmode="service" class="formmode-btn flex-1 py-3 min-h-[44px] rounded-xl border-2 text-sm font-bold transition-all"></button>
         </div>
       </div>
       <div>
@@ -190,7 +198,7 @@ tailwind.config = {
       </div>
       <div>
         <label id="lblExpiration" class="block text-xs font-bold text-inks mb-1.5"></label>
-        <div id="expChips" class="grid grid-cols-4 gap-2"></div>
+        <div id="expChips" class="grid grid-cols-2 sm:grid-cols-4 gap-2"></div>
       </div>
       <button type="submit" id="submitBtn" class="w-full bg-moss-500 hover:bg-moss-600 text-white font-bold py-3 rounded-xl shadow-soft transition-all active:scale-[.98] flex items-center justify-center gap-2">
         <i data-lucide="send" class="w-4 h-4"></i>
@@ -228,8 +236,8 @@ tailwind.config = {
       </div>
     </div>
     <div class="flex flex-col sm:flex-row gap-3 mb-4">
-      <input id="adminSearchInput" type="text" class="flex-1 bg-white border border-clay2 rounded-xl py-2.5 px-3 text-sm" />
-      <select id="adminWilayaFilter" class="bg-white border border-clay2 rounded-xl py-2.5 px-3 text-sm min-w-[9rem]"></select>
+      <input id="adminSearchInput" type="text" class="flex-1 min-w-0 bg-white border border-clay2 rounded-xl py-3 sm:py-2.5 px-3 text-sm" />
+      <select id="adminWilayaFilter" class="w-full sm:w-auto bg-white border border-clay2 rounded-xl py-3 sm:py-2.5 px-3 text-sm sm:min-w-[9rem]"></select>
     </div>
     <div id="adminList" class="space-y-2"></div>
   </div>
@@ -823,13 +831,13 @@ function buildCategoryChips() {
   const wrap = document.getElementById("categoryChips");
   wrap.innerHTML = "";
   const allChip = document.createElement("button");
-  allChip.className = "chip whitespace-nowrap px-3.5 py-2 rounded-full text-xs font-bold border shrink-0";
+  allChip.className = "chip whitespace-nowrap px-3.5 py-2.5 rounded-full text-xs font-bold border shrink-0 min-h-[40px] flex items-center";
   allChip.dataset.cat = "all";
   allChip.textContent = t("allCategories");
   wrap.appendChild(allChip);
   CATEGORIES.forEach(c => {
     const chip = document.createElement("button");
-    chip.className = "chip whitespace-nowrap px-3.5 py-2 rounded-full text-xs font-bold border shrink-0 flex items-center gap-1.5";
+    chip.className = "chip whitespace-nowrap px-3.5 py-2.5 rounded-full text-xs font-bold border shrink-0 flex items-center gap-1.5 min-h-[40px]";
     chip.dataset.cat = c.k;
     chip.innerHTML = `<i data-lucide="${c.icon}" class="w-3.5 h-3.5"></i><span>${t("cat_" + c.k)}</span>`;
     wrap.appendChild(chip);
@@ -871,7 +879,7 @@ function buildExpChips() {
     const b = document.createElement("button");
     b.type = "button";
     b.dataset.exp = val;
-    b.className = "chip py-2 rounded-lg border-2 text-xs font-bold";
+    b.className = "chip py-2.5 rounded-lg border-2 text-xs font-bold min-h-[40px]";
     b.textContent = t(key);
     wrap.appendChild(b);
   });
@@ -1180,12 +1188,12 @@ function renderCard(post) {
         </div>
         <div>
           <p class="text-[11px] font-bold ${post.mode === "request" ? "text-urgent-600" : "text-moss-700"}">${t("cat_" + cat.k)}</p>
-          <p class="text-[11px] text-inkfaint">${wilayaName(post._wilayaCode)} · ${communeDisplay}</p>
+          <p class="text-[11px] text-inkfaint break-words">${wilayaName(post._wilayaCode)} · ${communeDisplay}</p>
         </div>
       </div>
       <div class="flex items-center gap-1.5 shrink-0">
         <span class="text-[10px] text-inkfaint whitespace-nowrap">${timeAgo(post.createdAt || Date.now())}</span>
-        <button data-action="flag" data-id="${post._id}" data-wc="${post._wilayaCode}" ${flagged ? "disabled" : ""} class="w-6 h-6 rounded-full flex items-center justify-center ${flagged ? "text-inkfaint" : "text-inkfaint hover:text-urgent-600 hover:bg-urgent-50"} transition-colors" aria-label="${t("reportBtn")}" title="${flagged ? t("alreadyReported") : t("reportBtn")}">
+        <button data-action="flag" data-id="${post._id}" data-wc="${post._wilayaCode}" ${flagged ? "disabled" : ""} class="w-9 h-9 shrink-0 rounded-full flex items-center justify-center ${flagged ? "text-inkfaint" : "text-inkfaint hover:text-urgent-600 hover:bg-urgent-50"} transition-colors" aria-label="${t("reportBtn")}" title="${flagged ? t("alreadyReported") : t("reportBtn")}">
           <i data-lucide="flag" class="w-3.5 h-3.5"></i>
         </button>
       </div>
@@ -1194,25 +1202,25 @@ function renderCard(post) {
       <i data-lucide="badge-check" class="w-3 h-3"></i>${t("frequentBadge")}
     </div>` : ""}
     <div>
-      <h3 class="font-display font-bold text-sm text-ink leading-snug">${escapeHtml(post.title)}</h3>
-      ${post.details ? `<p class="text-xs text-inks mt-1 leading-relaxed">${escapeHtml(post.details)}</p>` : ""}
+      <h3 class="font-display font-bold text-sm text-ink leading-snug break-words">${escapeHtml(post.title)}</h3>
+      ${post.details ? `<p class="text-xs text-inks mt-1 leading-relaxed break-words">${escapeHtml(post.details)}</p>` : ""}
     </div>
     <div class="flex items-center justify-between text-[11px] text-inkfaint">
       <span class="flex items-center gap-1"><i data-lucide="clock" class="w-3 h-3"></i>${left ? `${t("expiresIn")} ${left}` : t("expired")}</span>
     </div>
     ${mine ? "" : `
     <div class="flex gap-2 mt-1">
-      <a href="${telLink}" class="flex-1 flex items-center justify-center gap-1.5 bg-ink text-white text-xs font-bold py-2.5 rounded-xl hover:opacity-90 transition-opacity">
+      <a href="${telLink}" class="flex-1 flex items-center justify-center gap-1.5 bg-ink text-white text-xs font-bold py-3 min-h-[44px] rounded-xl hover:opacity-90 transition-opacity">
         <i data-lucide="phone" class="w-3.5 h-3.5"></i>${t("callNow")}
       </a>
-      <a href="${waLink}" target="_blank" rel="noopener" class="flex-1 flex items-center justify-center gap-1.5 bg-moss-500 text-white text-xs font-bold py-2.5 rounded-xl hover:bg-moss-600 transition-colors">
+      <a href="${waLink}" target="_blank" rel="noopener" class="flex-1 flex items-center justify-center gap-1.5 bg-moss-500 text-white text-xs font-bold py-3 min-h-[44px] rounded-xl hover:bg-moss-600 transition-colors">
         <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>${t("whatsapp")}
       </a>
     </div>`}
     ${mine ? `
     <div class="flex gap-2 pt-2 border-t border-clay2">
-      <button data-action="fulfill" data-id="${post._id}" data-wc="${post._wilayaCode}" class="flex-1 text-[11px] font-bold text-moss-700 bg-moss-50 py-2 rounded-lg hover:bg-moss-100 transition-colors">${t("markFulfilled")}</button>
-      <button data-action="delete" data-id="${post._id}" data-wc="${post._wilayaCode}" class="flex-1 text-[11px] font-bold text-urgent-600 bg-urgent-50 py-2 rounded-lg hover:bg-urgent-100 transition-colors">${t("deleteBtn")}</button>
+      <button data-action="fulfill" data-id="${post._id}" data-wc="${post._wilayaCode}" class="flex-1 text-[11px] font-bold text-moss-700 bg-moss-50 py-2.5 min-h-[40px] rounded-lg hover:bg-moss-100 transition-colors">${t("markFulfilled")}</button>
+      <button data-action="delete" data-id="${post._id}" data-wc="${post._wilayaCode}" class="flex-1 text-[11px] font-bold text-urgent-600 bg-urgent-50 py-2.5 min-h-[40px] rounded-lg hover:bg-urgent-100 transition-colors">${t("deleteBtn")}</button>
     </div>` : ""}
   `;
   return card;
@@ -1497,7 +1505,7 @@ function renderAdminList() {
         <p class="text-xs text-inkfaint mt-0.5">${wilayaName(post._wilayaCode)} · ${communeLabel(post._wilayaCode, post.commune)} · ${post.phone || ""}</p>
       </div>
       <div class="flex items-center gap-1.5 flex-wrap shrink-0">
-        <select data-action="adminPin" data-id="${post._id}" data-wc="${post._wilayaCode}" class="text-[11px] font-bold border border-clay2 rounded-lg py-1.5 px-2 bg-cream">
+        <select data-action="adminPin" data-id="${post._id}" data-wc="${post._wilayaCode}" class="text-[11px] font-bold border border-clay2 rounded-lg py-2 px-2 min-h-[36px] bg-cream">
           <option value="">${isPinned ? t("adminUnpin") : t("adminPinFor")}</option>
           ${!isPinned ? `
           <option value="1d">${t("adminPin1d")}</option>
@@ -1505,8 +1513,8 @@ function renderAdminList() {
           <option value="7d">${t("adminPin7d")}</option>
           <option value="forever">${t("adminPinForever")}</option>` : `<option value="unpin">${t("adminUnpin")}</option>`}
         </select>
-        <button data-action="adminEdit" data-id="${post._id}" data-wc="${post._wilayaCode}" class="text-[11px] font-bold bg-moss-50 text-moss-700 px-2.5 py-1.5 rounded-lg hover:bg-moss-100 transition-colors">${t("adminEdit")}</button>
-        <button data-action="adminDelete" data-id="${post._id}" data-wc="${post._wilayaCode}" class="text-[11px] font-bold bg-urgent-50 text-urgent-600 px-2.5 py-1.5 rounded-lg hover:bg-urgent-100 transition-colors">${t("adminDelete")}</button>
+        <button data-action="adminEdit" data-id="${post._id}" data-wc="${post._wilayaCode}" class="text-[11px] font-bold bg-moss-50 text-moss-700 px-3 py-2 min-h-[36px] rounded-lg hover:bg-moss-100 transition-colors">${t("adminEdit")}</button>
+        <button data-action="adminDelete" data-id="${post._id}" data-wc="${post._wilayaCode}" class="text-[11px] font-bold bg-urgent-50 text-urgent-600 px-3 py-2 min-h-[36px] rounded-lg hover:bg-urgent-100 transition-colors">${t("adminDelete")}</button>
       </div>
     `;
     wrap.appendChild(row);
